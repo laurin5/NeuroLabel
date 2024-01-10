@@ -16,11 +16,13 @@ function ProjectDetails() {
   const [fileName, setFileName] = useState("");
   const [fileName2, setFileName2] = useState("");
   const [toggleDatasetVisibility, setToggleDatasetVisibility] = useState(false);
-  const [toggleLabelVisibility, setToggleLabelVisibility] = useState(false);
-  const [tasks, setTasks] = useState([]);
-  const [taskIndex, setTaskIndex] = useState(1);
-  let datasetName = useRef(null);
   const [dataset, setDataset] = useState([]);
+  const [toggleTaskVisibility, setToggleTaskVisibility] = useState(false);
+  const [selectedDatasetId, setSelectedDatasetId] = useState(null);
+  const [tasks, setTasks] = useState([]);
+
+  let datasetName = useRef(null);
+  let descriptionInput = useRef(null);
 
   const params = useParams();
   let navigator = useNavigate();
@@ -71,22 +73,13 @@ function ProjectDetails() {
     setShowMember(true);
   };
 
-  const handleButtonIndex = () => {
-    if (index === 3) {
-      setIndex(0);
-    } else if (selectedSign.length > 1 && index === 0) {
-      setIndex(index + 1);
-    } else if (firstSign.length > 1 && index === 1) {
-      setIndex(index + 1);
-    } else if (secondSign.length > 1 && index === 2) {
-      setIndex(index + 1);
-    } else {
-      console.log("Bitte laden Sie ein File hoch");
-    }
+  const handleDatasetClick = (datasetId) => {
+    setSelectedDatasetId(datasetId);
+    handleButtonClick();
   };
 
-  const handleChange = (event) => {
-    setSelectedSign(event.target.value);
+  const handleIndex = () => {
+    setIndex(index + 1);
   };
 
   const handleFileInput1 = (event) => {
@@ -121,14 +114,6 @@ function ProjectDetails() {
     }
   };
 
-  const createNewTask = () => {
-    setTaskIndex(taskIndex + 1);
-    const newTask = {
-      id: taskIndex,
-    };
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-  };
-
   const createNewDataset = async () => {
     const response = await fetch(
       `http://lizard-studios.at:10187/projects/${params.id}/datasets`,
@@ -147,6 +132,39 @@ function ProjectDetails() {
     const responseJSON = await response.json();
   };
 
+  const createNewTask = async () => {
+    const response = await fetch(
+      `http://lizard-studios.at:10187/projects/datasets/${selectedDatasetId}/tasks`,
+      {
+        method: "POST",
+        headers: {
+          SessionID: localStorage.getItem("sessionid"),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          task: descriptionInput.current.value,
+          labels: "123",
+        }),
+      }
+    );
+    const responseJSON = await response.json();
+    console.log(responseJSON);
+  };
+
+  const fetchTasks = async () => {
+    const response = await fetch(
+      `http://lizard-studios.at:10187/projects/datasets/${selectedDatasetId}/tasks`,
+      {
+        headers: {
+          SessionID: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    setTasks(responseJSON.tasks);
+    console.log(responseJSON);
+  };
+
   return (
     <div className="w-full h-screen flex items-center mt-6 flex-col gap-4">
       {details.project && (
@@ -160,8 +178,11 @@ function ProjectDetails() {
       )}
       {dataset.map((data) => (
         <button
+          key={data.id}
           className="w-2/3 bg-blue-900 text-white py-2 rounded-sm mt-4"
-          onClick={handleButtonClick}
+          onClick={() => {
+            handleDatasetClick(data.id);
+          }}
         >
           {data.name}
         </button>
@@ -170,143 +191,55 @@ function ProjectDetails() {
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50">
           <div className="max-md:w-[90%] w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 justify-evenly">
             <p
-              onClick={() => setVisible(false)}
+              onClick={() => {
+                setVisible(false);
+              }}
               className="text-2xl absolute top-[14%] left-[85%] cursor-pointer"
             >
               &times;
             </p>
-            <p>Was wollen Sie hochladen?</p>
+            <div className="max-md:w-[90%] w-full h-screen bg-white rounded-md flex items-center flex-col pt-8 justify-evenly">
+              <p
+                onClick={() => setToggleTaskVisibility(true)}
+                className="text-blue-700 border-b-[1px] cursor-pointer"
+              >
+                Task erstellen
+              </p>
 
-            <Select
-              className="w-[60%]"
-              label="Schild auswählen"
-              value={selectedSign}
-              onChange={handleChange}
-            >
-              <MenuItem value="">
-                <em>Kein Schild ausgewählt</em>
-              </MenuItem>
-              <MenuItem value="Stop">Stop</MenuItem>
-              <MenuItem value="Vorfahrt">Vorfahrt</MenuItem>
-              <MenuItem value="Geschwindigkeitsbegrenzung">
-                Geschwindigkeitsbegrenzung
-              </MenuItem>
-              <MenuItem value="Parken">Parken</MenuItem>
-              <MenuItem value="Überholverbot">Überholverbot</MenuItem>
-              <MenuItem value="Fußgängerüberweg">Fußgängerüberweg</MenuItem>
-              <MenuItem value="Kreuzung">Kreuzung</MenuItem>
-              <MenuItem value="Einfahrt verboten">Einfahrt verboten</MenuItem>
-              <MenuItem value="Umweltzone">Umweltzone</MenuItem>
-              <MenuItem value="Autobahn">Autobahn</MenuItem>
-            </Select>
+              {toggleTaskVisibility && (
+                <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0">
+                  <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 justify-evenly max-md:w-[90%]">
+                    <p>Geben sie die Beschreibung ihrer Task ein!</p>
 
-            <button
-              className="w-2/3 border-[1px] bg-blue-900 text-white py-2 rounded-sm max-md:w-[60%]"
-              onClick={handleButtonIndex}
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-      )}
-      {visible && index === 1 && (
-        <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50">
-          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 justify-evenly max-md:w-[90%]">
-            <p className="text-center">
-              Laden Sie ein Bild des {selectedSign} Schildes aus 15m Entfernung
-              hoch!
-            </p>
-            <div className="relative mt-4 max-md:w-[60%]">
-              <input
-                type="file"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                onChange={handleFileInput1}
-              />
-              <div className="border-blue-900 border rounded-md p-2 text-sm text-gray-700">
-                <span className="text-gray-400">
-                  {fileName ? `${fileName}` : "Bild"}
-                </span>
-              </div>
-            </div>
-            {firstSign && <img src={firstSign} alt="" />}
-            <button
-              className="w-2/3 border-[1px] bg-blue-900 text-white py-2 rounded-sm max-md:w-[60%]"
-              onClick={handleButtonIndex}
-            >
-              Continue
-            </button>
-            <button
-              onClick={() => setIndex(index - 1)}
-              className="text-blue-700 border-b border-blue-700"
-            >
-              Zurück
-            </button>
-          </div>
-        </div>
-      )}
+                    <label htmlFor="description">Beschreibung</label>
+                    <input
+                      type="text"
+                      placeholder="Beschreibung..."
+                      name="description"
+                      ref={descriptionInput}
+                    />
 
-      {visible && index === 2 && (
-        <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50">
-          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 justify-evenly max-md:w-[90%]">
-            <p className="text-center">
-              Laden Sie ein Bild des {selectedSign} Schildes aus 10m Entfernung
-              hoch.
-            </p>
-            <div className="relative mt-4 max-md:w-[60%]">
-              <input
-                type="file"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                onChange={() => {
-                  handleFileInput2;
-                  uploadPictures;
+                    <button onClick={createNewTask}>Submit</button>
+                  </div>
+                </div>
+              )}
+              <button
+                onClick={() => {
+                  fetchTasks();
+                  setIndex(1);
                 }}
-                ref={emailInput2}
-              />
-              <div className="border-blue-900 border rounded-md p-2 text-sm text-gray-700">
-                <span className="text-gray-400">
-                  {fileName2 ? `${fileName2}` : "Bild"}
-                </span>
-              </div>
+              >
+                Continue
+              </button>
             </div>
-            {secondSign && <img src={secondSign} alt="" />}
-            <button
-              className="w-2/3 border-[1px] bg-blue-900 text-white py-2 rounded-sm max-md:w-[60%]"
-              onClick={handleButtonIndex}
-            >
-              Continue
-            </button>
-            <button
-              onClick={() => setIndex(index - 1)}
-              className="text-blue-700 border-b border-blue-700"
-            >
-              Zurück
-            </button>
           </div>
         </div>
       )}
-
-      {visible && index === 3 && (
-        <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50">
-          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 justify-evenly max-md:w-[90%]">
-            <p>Danke fürs mitmachen!</p>
-            <button
-              className="bg-blue-900 text-white py-2 rounded-sm max-md:w-[60%]"
-              onClick={() => {
-                setVisible(false);
-                setIndex(0);
-                setFileName("");
-                setFileName2("");
-                setFirstSign("");
-                setSecondSign("");
-                setSelectedSign("");
-              }}
-            >
-              Beenden
-            </button>
-          </div>
+      {index == 1 && (
+        <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
+          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4"></div>
         </div>
       )}
-
       <button
         onClick={() => {
           navigator("/invite/send");
@@ -376,18 +309,6 @@ function ProjectDetails() {
               placeholder="Name"
             />
             <button
-              onClick={createNewTask}
-              className="border-blue-900 border text-blue-900 py-2 rounded-sm max-md:w-[60%]"
-            >
-              Create new Task
-            </button>
-            {tasks.map((task) => (
-              <div key={task.id}>
-                <p className="text-center">Task #{task.id}</p>
-                <input type="text" className="border-2" />
-              </div>
-            ))}
-            <button
               onClick={() => {
                 createNewDataset();
                 setToggleDatasetVisibility(false);
@@ -405,3 +326,21 @@ function ProjectDetails() {
 }
 
 export default ProjectDetails;
+
+/* <div className="relative mt-4 max-md:w-[60%]">
+              <input
+                type="file"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                onChange={() => {
+                  handleFileInput2;
+                  uploadPictures;
+                }}
+                ref={emailInput2}
+              />
+              <div className="border-blue-900 border rounded-md p-2 text-sm text-gray-700">
+                <span className="text-gray-400">
+                  {fileName2 ? `${fileName2}` : "Bild"}
+                </span>
+              </div>
+            </div>
+  */

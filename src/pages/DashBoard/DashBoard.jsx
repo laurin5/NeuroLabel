@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 
 function Dashboard() {
   const [projects, setProjects] = useState([]);
   const projectnameInput = useRef(null);
   const projectdescriptionInput = useRef(null);
+  const [admin, setAdmin] = useState(null);
 
   async function loadProjects() {
     let response = await fetch("http://lizard-studios.at:10187/projects", {
@@ -15,6 +16,7 @@ function Dashboard() {
     });
 
     let responseJSON = await response.json();
+    console.log(responseJSON);
     setProjects(responseJSON.projects);
   }
 
@@ -28,7 +30,11 @@ function Dashboard() {
       <div className="border-b-[1px] border-black"></div>
       <div className="gap-4 p-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
         <div>
-          <Link to="/create"><button className="shadow-black shadow-sm rounded-md w-full h-full text-white" ><AddIcon color="primary"/></button></Link>
+          <Link to="/create">
+            <button className="shadow-black shadow-sm rounded-md w-full h-full text-white">
+              <AddIcon color="primary" />
+            </button>
+          </Link>
         </div>
         {projects.map((project) => (
           <Link to={`/projects/${project.id}`} key={project.id}>
@@ -38,9 +44,7 @@ function Dashboard() {
             >
               <img src="firefox.png" className="h-[75px] object-cover" alt="" />
               <div className="w-full border-b-[1px]"></div>
-              <h2>
-                {project.name}
-              </h2>
+              <h2>{project.name}</h2>
             </div>
           </Link>
         ))}
