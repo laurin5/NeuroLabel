@@ -6,7 +6,6 @@ function Dashboard() {
   const [projects, setProjects] = useState([]);
   const projectnameInput = useRef(null);
   const projectdescriptionInput = useRef(null);
-  const [admin, setAdmin] = useState(null);
 
   async function loadProjects() {
     let response = await fetch("http://lizard-studios.at:10187/projects", {
@@ -37,7 +36,7 @@ function Dashboard() {
           </Link>
         </div>
         {projects.map((project) => (
-          <Link to={`/projects/${project.id}`} key={project.id}>
+          <Link to={`/projects/${project.id}`} state={{isAdmin: project.is_admin}} key={project.id}>
             <div
               className="shadow-black shadow-sm rounded-md p-2 text-center text-sm h-auto w-auto flex flex-col items-center gap-1"
               key={project.id}
