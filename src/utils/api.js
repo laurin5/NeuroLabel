@@ -1,0 +1,1 @@
+export const API_HOST = "http://lizard-studios.at:10187"

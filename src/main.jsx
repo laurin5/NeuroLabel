@@ -14,6 +14,7 @@ import SessionsPage from "./pages/SessionsPage/SessionsPage.jsx";
 import MobileNavbar from "./components/MobileNavbar.jsx";
 import CreatePage from "./pages/CreatePage/CreatePage.jsx";
 import InvitePeople from "./pages/InvitePeoplePage/InvitePeoplePage.jsx";
+import EntryPage from "./pages/EntryPage/EntryPage.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -29,6 +30,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           <Route path="/projects/:id" element={<ProjectDetails />}></Route>
           <Route path="/invites" element={<InvitePage />}></Route>
           <Route path="/sessions" element={<SessionsPage />}></Route>
+          <Route path="/projects/datasets/:id/entries" element={<EntryPage />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>

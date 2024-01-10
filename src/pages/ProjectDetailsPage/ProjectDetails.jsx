@@ -2,34 +2,33 @@ import Button from "@mui/material/Button";
 import { useEffect, useState, useRef } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useNavigate, useLocation } from "react-router-dom";
+import { API_HOST } from "../../utils/api";
 
 function ProjectDetails() {
   const [visible, setVisible] = useState(false);
   const [index, setIndex] = useState(0);
   const [showMember, setShowMember] = useState(false);
   const [details, setDetails] = useState({});
-  const [fileName, setFileName] = useState("");
   const [toggleDatasetVisibility, setToggleDatasetVisibility] = useState(false);
   const [dataset, setDataset] = useState([]);
   const [toggleTaskVisibility, setToggleTaskVisibility] = useState(false);
   const [selectedDatasetId, setSelectedDatasetId] = useState(null);
   const [tasks, setTasks] = useState([]);
-  const [picture, setPicture] = useState("");
   const [toggleLabelVisibility, setToggleLabelVisibility] = useState(false);
   const [labels, setLabels] = useState([]);
   const [selectedLabel, setSelectedLabel] = useState("");
+  const [file, setFile] = useState(null);
+  const [selectedLabelId, setSelectedLabelId] = useState("");
 
   let datasetName = useRef(null);
   let descriptionInput = useRef(null);
   let labelNameInput = useRef(null);
-  let fileInput = useRef(null);
 
   const params = useParams();
   let navigator = useNavigate();
   let location = useLocation();
-  console.log(location.state)
 
   async function kickUser(emailInput) {
     let response = await fetch(
@@ -67,7 +66,12 @@ function ProjectDetails() {
 
   useEffect(() => {
     loadProjectDetails();
-  }, []);
+
+    if(selectedDatasetId) {
+      fetchTasks();
+      fetchLabels();
+    }
+  }, [selectedDatasetId]);
 
   const handleButtonClick = () => {
     setVisible(true);
@@ -82,20 +86,12 @@ function ProjectDetails() {
     handleButtonClick();
   };
 
+  const handleLabelClick = (labelId) => {
+    setSelectedLabelId(labelId);
+  }
+
   const handleFileInput = (event) => {
-    const file = event.target.files[0];
-
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        setPicture(reader.result);
-      };
-
-      setFileName(file.name);
-
-      reader.readAsDataURL(file);
-    }
+    setFile(event.target.files[0]);
   };
 
   const createNewDataset = async () => {
@@ -113,7 +109,6 @@ function ProjectDetails() {
         }),
       }
     );
-    const responseJSON = await response.json();
   };
 
   const createNewTask = async () => {
@@ -127,7 +122,6 @@ function ProjectDetails() {
         },
         body: JSON.stringify({
           task: descriptionInput.current.value,
-          labels: "123",
         }),
       }
     );
@@ -150,19 +144,36 @@ function ProjectDetails() {
   };
 
   const uploadFile = async () => {
-    console.log(fileInput.current.value);
-    const response = await fetch("http://lizard-studios.at:10187/files", {
+
+    const formData = new FormData();
+    formData.append('image', file);
+    console.log(file);
+
+    const response1 = await fetch("http://lizard-studios.at:10187/files", {
+      method: "POST",
+      headers: {
+        "SessionID": localStorage.getItem("sessionid"),
+      },
+      body: formData,
+    });
+    
+    const responseJSON1 = await response1.json();
+    console.log(responseJSON1.filename);
+
+    const response2 = await fetch(`${API_HOST}/projects/datasets/${selectedDatasetId}/entries`, {
       method: "POST",
       headers: {
         SessionID: localStorage.getItem("sessionid"),
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        image: fileInput.current.value,
-      }),
-    });
-    const responseJSON = await response.json();
-    console.log(responseJSON);
+        image_url: responseJSON1.filename,
+        label_uuid: selectedLabelId,
+      })
+    })
+    const responseJSON2 = await response2.json();
+    console.log(responseJSON2);
+    console.log(selectedLabelId);
   };
 
   const createNewLabel = async () => {
@@ -181,6 +192,7 @@ function ProjectDetails() {
     );
     const responseJSON = await response.json();
     console.log(responseJSON);
+    setSelectedLabelId(responseJSON.id);
   };
 
   const fetchLabels = async () => {
@@ -196,7 +208,7 @@ function ProjectDetails() {
     setLabels(responseJSON.labels);
     console.log(responseJSON);
   };
-
+ 
   return (
     <div className="w-full h-screen flex items-center mt-6 flex-col gap-4">
       {details.project && (
@@ -233,6 +245,7 @@ function ProjectDetails() {
             <div className="max-md:w-[90%] w-full h-screen bg-white rounded-md flex items-center flex-col pt-8 justify-evenly">
               {location.state.isAdmin && (
                 <div className="flex flex-col gap-4">
+                  <Link state={{id: selectedDatasetId}} className="text-blue-700 border-b-[1px] cursor-pointer" to={`/projects/datasets/${selectedDatasetId}/entries`}>Schau die Entries dieses Datasets an</Link>
                   <p
                     onClick={() => setToggleTaskVisibility(true)}
                     className="text-blue-700 border-b-[1px] cursor-pointer"
@@ -300,8 +313,6 @@ function ProjectDetails() {
               )}
               <button
                 onClick={() => {
-                  fetchTasks();
-                  fetchLabels();
                   setIndex(1);
                 }}
               >
@@ -352,13 +363,16 @@ function ProjectDetails() {
                 &times;
               </p>
               <label htmlFor="fileUpload">Lade hier das Bild hoch</label>
-              <input onChange={handleFileInput} ref={fileInput} type="file" />
+              <input onChange={handleFileInput} type="file" />
             </div>
             <p>Geben Sie ihrem Bild ein Label</p>
             <Select
               label="Label auswählen"
               value={selectedLabel}
-              onChange={(e) => setSelectedLabel(e.target.value)}
+              onChange={(e) => {
+                setSelectedLabel(e.target.value);
+                handleLabelClick(labels.find((label) => label.label === e.target.value)?.id);
+              }}
             >
               {labels.map((label) => (
                 <MenuItem key={label.id} value={label.label}>
@@ -366,7 +380,9 @@ function ProjectDetails() {
                 </MenuItem>
               ))}
             </Select>
-            <button onClick={uploadFile}>Submit</button>
+            <button onClick={() => {
+              uploadFile();
+            }}>Submit</button>
           </div>
         </div>
       )}

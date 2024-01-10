@@ -4,8 +4,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 function Dashboard() {
   const [projects, setProjects] = useState([]);
-  const projectnameInput = useRef(null);
-  const projectdescriptionInput = useRef(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   async function loadProjects() {
     let response = await fetch("http://lizard-studios.at:10187/projects", {
@@ -15,9 +14,13 @@ function Dashboard() {
     });
 
     let responseJSON = await response.json();
-    console.log(responseJSON);
     setProjects(responseJSON.projects);
   }
+
+  const handleDeleteClick = (event) => {
+    event.stopPropagation();
+    setConfirmDelete(true);
+  };
 
   useEffect(() => {
     loadProjects();
@@ -36,11 +39,32 @@ function Dashboard() {
           </Link>
         </div>
         {projects.map((project) => (
-          <Link to={`/projects/${project.id}`} state={{isAdmin: project.is_admin}} key={project.id}>
+          <Link className="z-0"
+            to={`/projects/${project.id}`}
+            state={{ isAdmin: project.is_admin }}
+            key={project.id}
+          >
             <div
-              className="shadow-black shadow-sm rounded-md p-2 text-center text-sm h-auto w-auto flex flex-col items-center gap-1"
+              className="shadow-black shadow-sm rounded-md p-2 text-center text-sm h-auto w-auto flex flex-col items-center gap-1 relative"
               key={project.id}
             >
+              <p
+                onClick={() => {
+                  setConfirmDelete(true);
+                }}
+                className="text-2xl z-10 absolute top-0 right-2 cursor-pointer"
+              >
+                &times;
+              </p>
+              {confirmDelete && (
+                <div>
+                  <p>Willst du dieses Projekt wirklich löschen</p>
+                  <div>
+                    <button>Nein</button>
+                    <button>Ja</button>
+                  </div>
+                </div>
+              )}
               <img src="firefox.png" className="h-[75px] object-cover" alt="" />
               <div className="w-full border-b-[1px]"></div>
               <h2>{project.name}</h2>
