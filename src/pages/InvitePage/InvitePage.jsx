@@ -78,7 +78,7 @@ function InvitePage() {
       }
     );
 
-    navigator(`/projects/${projectId}`);
+    navigator("/projects");
   }
 
   useEffect(() => {
@@ -105,8 +105,9 @@ function InvitePage() {
       <p>Invites</p>
       {invites.map((invite) => (
         <div key={invite.id} className="border-2 p-2 rounded-md">
-          <p>
+          <div className="flex flex-row gap-4 items-center">
             {invite.project.name} from {invite.sender.first_name}
+            <div className="flex gap-2">
             <Button
               onClick={() => acceptInvites(invite.id, invite.project_id)}
               variant="contained"
@@ -119,7 +120,8 @@ function InvitePage() {
             >
               Decline
             </Button>
-          </p>
+            </div>
+          </div>
         </div>
       ))}
     </div>

@@ -69,7 +69,7 @@ function LoginPage() {
               placeholder="your password"
             />
           </div>
-          <button className="duration-300 hover:bg-blue-800 bg-blue-900 text-xl text-white w-full mt-6 py-2 rounded-sm font-semibold" type="submit">Sign Up</button>
+          <button className="duration-300 hover:bg-blue-800 bg-blue-900 text-xl text-white w-full mt-6 py-2 rounded-sm font-semibold" type="submit">Sign In</button>
         </form>
         <div className="flex flex-col items-center mt-4 justify-center">
           <a className="text-blue-700 mb-2">Forgot password?</a>

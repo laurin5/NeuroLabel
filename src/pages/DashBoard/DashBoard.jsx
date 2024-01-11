@@ -48,14 +48,14 @@ function Dashboard() {
               className="shadow-black shadow-sm rounded-md p-2 text-center text-sm h-auto w-auto flex flex-col items-center gap-1 relative"
               key={project.id}
             >
-              <p
+              {/* <p
                 onClick={() => {
                   setConfirmDelete(true);
                 }}
                 className="text-2xl z-10 absolute top-0 right-2 cursor-pointer"
               >
                 &times;
-              </p>
+              </p> */}
               {confirmDelete && (
                 <div>
                   <p>Willst du dieses Projekt wirklich löschen</p>

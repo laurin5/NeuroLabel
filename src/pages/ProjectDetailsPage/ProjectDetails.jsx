@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { useParams, Link } from "react-router-dom";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { API_HOST } from "../../utils/api";
 
 function ProjectDetails() {
@@ -21,13 +21,14 @@ function ProjectDetails() {
   const [selectedLabel, setSelectedLabel] = useState("");
   const [file, setFile] = useState(null);
   const [selectedLabelId, setSelectedLabelId] = useState("");
+  const [thanks, setThanks] = useState(false);
 
   let datasetName = useRef(null);
   let descriptionInput = useRef(null);
   let labelNameInput = useRef(null);
 
+  let navigate = useNavigate();
   const params = useParams();
-  let navigator = useNavigate();
   let location = useLocation();
 
   async function kickUser(emailInput) {
@@ -67,7 +68,7 @@ function ProjectDetails() {
   useEffect(() => {
     loadProjectDetails();
 
-    if(selectedDatasetId) {
+    if (selectedDatasetId) {
       fetchTasks();
       fetchLabels();
     }
@@ -88,7 +89,7 @@ function ProjectDetails() {
 
   const handleLabelClick = (labelId) => {
     setSelectedLabelId(labelId);
-  }
+  };
 
   const handleFileInput = (event) => {
     setFile(event.target.files[0]);
@@ -144,36 +145,39 @@ function ProjectDetails() {
   };
 
   const uploadFile = async () => {
-
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append("image", file);
     console.log(file);
 
     const response1 = await fetch("http://lizard-studios.at:10187/files", {
       method: "POST",
       headers: {
-        "SessionID": localStorage.getItem("sessionid"),
+        SessionID: localStorage.getItem("sessionid"),
       },
       body: formData,
     });
-    
     const responseJSON1 = await response1.json();
-    console.log(responseJSON1.filename);
+    console.log(responseJSON1);
 
-    const response2 = await fetch(`${API_HOST}/projects/datasets/${selectedDatasetId}/entries`, {
-      method: "POST",
-      headers: {
-        SessionID: localStorage.getItem("sessionid"),
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        image_url: responseJSON1.filename,
-        label_uuid: selectedLabelId,
-      })
-    })
+    const response2 = await fetch(
+      `${API_HOST}/projects/datasets/${selectedDatasetId}/entries`,
+      {
+        method: "POST",
+        headers: {
+          SessionID: localStorage.getItem("sessionid"),
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          image_url: responseJSON1.filename,
+          label_uuid: selectedLabelId,
+        }),
+      }
+    );
     const responseJSON2 = await response2.json();
     console.log(responseJSON2);
     console.log(selectedLabelId);
+    setIndex(0);
+    setThanks(true);
   };
 
   const createNewLabel = async () => {
@@ -208,7 +212,12 @@ function ProjectDetails() {
     setLabels(responseJSON.labels);
     console.log(responseJSON);
   };
- 
+
+  const reload = () => {
+    fetchTasks();
+    fetchLabels();
+  };
+
   return (
     <div className="w-full h-screen flex items-center mt-6 flex-col gap-4">
       {details.project && (
@@ -245,7 +254,13 @@ function ProjectDetails() {
             <div className="max-md:w-[90%] w-full h-screen bg-white rounded-md flex items-center flex-col pt-8 justify-evenly">
               {location.state.isAdmin && (
                 <div className="flex flex-col gap-4">
-                  <Link state={{id: selectedDatasetId}} className="text-blue-700 border-b-[1px] cursor-pointer" to={`/projects/datasets/${selectedDatasetId}/entries`}>Schau die Entries dieses Datasets an</Link>
+                  <Link
+                    state={{ id: selectedDatasetId }}
+                    className="text-blue-700 border-b-[1px] cursor-pointer"
+                    to={`/projects/datasets/${selectedDatasetId}/entries`}
+                  >
+                    Schau die Entries dieses Datasets an
+                  </Link>
                   <p
                     onClick={() => setToggleTaskVisibility(true)}
                     className="text-blue-700 border-b-[1px] cursor-pointer"
@@ -253,7 +268,9 @@ function ProjectDetails() {
                     Task erstellen
                   </p>
                   <p
-                    onClick={() => setToggleLabelVisibility(true)}
+                    onClick={() => {
+                      setToggleLabelVisibility(true);
+                    }}
                     className="text-blue-700 border-b-[1px] cursor-pointer"
                   >
                     Labels erstellen
@@ -281,7 +298,15 @@ function ProjectDetails() {
                       ref={labelNameInput}
                     />
 
-                    <button onClick={createNewLabel}>Submit</button>
+                    <button
+                      onClick={() => {
+                        createNewLabel();
+                        setToggleLabelVisibility(false);
+                        reload();
+                      }}
+                    >
+                      Submit
+                    </button>
                   </div>
                 </div>
               )}
@@ -307,16 +332,28 @@ function ProjectDetails() {
                       ref={descriptionInput}
                     />
 
-                    <button onClick={createNewTask}>Submit</button>
+                    <button
+                      onClick={() => {
+                        createNewTask();
+                        setToggleTaskVisibility(false);
+                        reload();
+                      }}
+                    >
+                      Submit
+                    </button>
                   </div>
                 </div>
               )}
+              {thanks && (
+                <h1 className="font-semibold">Danke fürs mitmachen!</h1>
+              )}
               <button
+                className="border-b-[1px] border-blue-700 text-blue-700"
                 onClick={() => {
                   setIndex(1);
                 }}
               >
-                Continue
+                Hochladen
               </button>
             </div>
           </div>
@@ -324,7 +361,7 @@ function ProjectDetails() {
       )}
       {index == 1 && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
-          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">
+          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%] overflow-scroll">
             <p
               onClick={() => {
                 setVisible(setIndex(0));
@@ -351,27 +388,31 @@ function ProjectDetails() {
       )}
       {index == 2 && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
-          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">
+          <div className="relative w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">
             <div className=" mt-4 max-md:w-[60%] flex flex-col">
               <p
                 onClick={() => {
                   setVisible(setIndex(0));
                   setSelectedLabel("");
                 }}
-                className="text-2xl absolute top-[14%] left-[85%] cursor-pointer"
+                className="text-3xl absolute cursor-pointer top-0 right-4"
               >
                 &times;
               </p>
-              <label htmlFor="fileUpload">Lade hier das Bild hoch</label>
-              <input onChange={handleFileInput} type="file" />
             </div>
-            <p>Geben Sie ihrem Bild ein Label</p>
+            <h1 className="text-xl font-semibold tracking-wide">
+              Laden Sie hier ihr Bild hoch!
+            </h1>
+            <p className="text-md">Geben Sie ihrem Bild ein Label</p>
             <Select
+              className="w-[30%]"
               label="Label auswählen"
               value={selectedLabel}
               onChange={(e) => {
                 setSelectedLabel(e.target.value);
-                handleLabelClick(labels.find((label) => label.label === e.target.value)?.id);
+                handleLabelClick(
+                  labels.find((label) => label.label === e.target.value)?.id
+                );
               }}
             >
               {labels.map((label) => (
@@ -380,27 +421,40 @@ function ProjectDetails() {
                 </MenuItem>
               ))}
             </Select>
-            <button onClick={() => {
-              uploadFile();
-            }}>Submit</button>
+            <form className="flex flex-col gap-6 mt-10 justify-center items-center w-full">
+              <label htmlFor="fileUpload">Lade hier das Bild hoch</label>
+              <input onChange={handleFileInput} type="file" required />
+              <button
+                className="mt-20 bg-blue-800 text-white w-[30%] py-2 rounded-sm hover:bg-blue-700 duration-300"
+                onClick={() => {
+                  uploadFile();
+                  setSelectedLabel("");
+                }}
+              >
+                Submit
+              </button>
+            </form>
           </div>
         </div>
       )}
-      <button
-        onClick={() => {
-          navigator("/invite/send");
-          localStorage.setItem("projectID", details.project.id);
-        }}
-        className="w-2/3 border-[1px] border-blue-900 text-blue-900 py-2 rounded-sm"
-      >
-        Person einladen
-      </button>
+      {location.state.isAdmin && (
+        <Link
+          onClick={() => {
+            localStorage.setItem("projectID", details.project.id);
+          }}
+          state={{ isAdmin: location.state.isAdmin }}
+          to={"/invite/send"}
+          className="text-blue-700 border-b border-blue-700"
+        >
+          Personen einladen
+        </Link>
+      )}
       <button onClick={showMemberOnClick} variant="contained" className="">
         Project Member
       </button>
       {showMember && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
-          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4">
+          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">
             <p
               className="cursor-pointer"
               onClick={() => {

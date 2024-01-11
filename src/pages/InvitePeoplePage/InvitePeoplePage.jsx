@@ -1,12 +1,13 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useRef } from "react";
 
 function InvitePeople() {
   let navigator = useNavigate();
   const inviteInput = useRef(null);
+  let location = useLocation();
+  console.log(localStorage.getItem("projectID"))
 
-  async function sendInvite(event) {
-    event.preventDefault();
+  async function sendInvite() {
     const response = await fetch(
       `http://lizard-studios.at:10187/projects/${localStorage.getItem("projectID")}/invites`,
       {
@@ -28,7 +29,6 @@ function InvitePeople() {
         <h1 className="font-medium text-2xl mt-3 text-center">
           Personen einladen
         </h1>
-        <form>
           <div className="mt-4">
             <label
               className="block text-gray-400 text-[15px] mt-4 mb-1"
@@ -46,25 +46,21 @@ function InvitePeople() {
           </div>
           <div className="w-full flex flex-col items-center gap-4">
             <button
-              onClick={sendInvite}
+              onClick={() => {
+                sendInvite();
+                navigator("/projects");
+              }}
               className="duration-300 hover:bg-blue-800 bg-blue-900 text-xl text-white w-full mt-6 py-2 rounded-sm font-semibold"
               type="submit"
             >
               Senden
             </button>
-            <button
+            <Link state={{isAdmin: location.state.isAdmin}} to={`/projects/${localStorage.getItem("projectID")}`}
               className="text-blue-700 border-b border-blue-700"
-              onClick={() => {
-                navigator(
-                  `/projects/${localStorage.getItem("projectID")}`,
-                  localStorage.removeItem("projectID")
-                );
-              }}
             >
               Zurück
-            </button>
+            </Link>
           </div>
-        </form>
       </div>
     </div>
   );

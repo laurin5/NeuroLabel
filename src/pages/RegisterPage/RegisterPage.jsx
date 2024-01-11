@@ -24,10 +24,10 @@ function RegisterPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: usernameInput.current.value,
           first_name: firstnameInput.current.value,
           last_name: lastnameInput.current.value,
           password: passwordInput.current.value,
+          email: emailInput.current.value,
         }),
       }
     );
