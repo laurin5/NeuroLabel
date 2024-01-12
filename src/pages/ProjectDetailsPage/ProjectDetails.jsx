@@ -63,6 +63,7 @@ function ProjectDetails() {
     setDetails(responseJSON);
     console.log(responseJSON);
     setDataset(responseJSON.datasets);
+    console.log(responseJSON.members);
   }
 
   useEffect(() => {
@@ -176,8 +177,8 @@ function ProjectDetails() {
     const responseJSON2 = await response2.json();
     console.log(responseJSON2);
     console.log(selectedLabelId);
-    setIndex(0);
     setThanks(true);
+    setIndex(0);
   };
 
   const createNewLabel = async () => {
@@ -421,7 +422,10 @@ function ProjectDetails() {
                 </MenuItem>
               ))}
             </Select>
-            <form className="flex flex-col gap-6 mt-10 justify-center items-center w-full">
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="flex flex-col gap-6 mt-10 justify-center items-center w-full"
+            >
               <label htmlFor="fileUpload">Lade hier das Bild hoch</label>
               <input onChange={handleFileInput} type="file" required />
               <button
@@ -438,25 +442,33 @@ function ProjectDetails() {
         </div>
       )}
       {location.state.isAdmin && (
-        <Link
-          onClick={() => {
-            localStorage.setItem("projectID", details.project.id);
-          }}
-          state={{ isAdmin: location.state.isAdmin }}
-          to={"/invite/send"}
-          className="text-blue-700 border-b border-blue-700"
-        >
-          Personen einladen
-        </Link>
+        <div className="w-full items-center gap-4 flex flex-col">
+          <Link
+            onClick={() => {
+              localStorage.setItem("projectID", details.project.id);
+            }}
+            state={{ isAdmin: location.state.isAdmin }}
+            to={"/invite/send"}
+            className="text-blue-700 border-b border-blue-700"
+          >
+            Personen einladen
+          </Link>
+          <button
+            className="w-2/3 border-[1px] bg-blue-900 text-white py-2 rounded-sm"
+            onClick={() => setToggleDatasetVisibility(true)}
+          >
+            Create Dataset
+          </button>
+        </div>
       )}
       <button onClick={showMemberOnClick} variant="contained" className="">
         Project Member
       </button>
       {showMember && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
-          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">
+          <div className="relative w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">
             <p
-              className="cursor-pointer"
+              className="cursor-pointer absolute top-0 right-2 text-2xl"
               onClick={() => {
                 setShowMember(false);
               }}
@@ -465,28 +477,27 @@ function ProjectDetails() {
             </p>
             {details.members &&
               details.members.map((member) => (
-                <div className="flex gap-2 items-center">
+                <div
+                  key={details.members.id}
+                  className="flex gap-2 items-center"
+                >
                   <p>
                     {member.first_name} {member.last_name}
                   </p>
-                  <Button
-                    onClick={() => {
-                      kickUser(member.email);
-                    }}
-                  >
-                    Kick
-                  </Button>
+                  {location.state.isAdmin && (
+                    <Button
+                      onClick={() => {
+                        kickUser(member.email);
+                      }}
+                    >
+                      Kick
+                    </Button>
+                  )}
                 </div>
               ))}
           </div>
         </div>
       )}
-      <button
-        className="w-2/3 border-[1px] bg-blue-900 text-white py-2 rounded-sm"
-        onClick={() => setToggleDatasetVisibility(true)}
-      >
-        Create Dataset
-      </button>
       {toggleDatasetVisibility && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
           <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">
@@ -494,7 +505,6 @@ function ProjectDetails() {
               onClick={() => {
                 setToggleDatasetVisibility(false);
                 setTasks([]);
-                setTaskIndex(1);
               }}
               className="text-2xl absolute top-[14%] left-[85%] cursor-pointer"
             >

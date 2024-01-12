@@ -15,6 +15,7 @@ function Dashboard() {
 
     let responseJSON = await response.json();
     setProjects(responseJSON.projects);
+    console.log(responseJSON);
   }
 
   const handleDeleteClick = (event) => {
@@ -39,7 +40,8 @@ function Dashboard() {
           </Link>
         </div>
         {projects.map((project) => (
-          <Link className="z-0"
+          <Link
+            className="z-0"
             to={`/projects/${project.id}`}
             state={{ isAdmin: project.is_admin }}
             key={project.id}
