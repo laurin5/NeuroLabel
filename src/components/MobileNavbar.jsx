@@ -20,8 +20,8 @@ function MobileNavbar() {
   }
   return (
     <div> 
-      <BottomNavigation
-        sx={{  position: 'fixed', bottom: 0, left: 0, right: 0  }}
+      <BottomNavigation 
+        sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 10}}
         value={value}
         onChange={handleChange}
       >

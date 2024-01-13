@@ -459,11 +459,11 @@ function ProjectDetails() {
           >
             Create Dataset
           </button>
+          <button onClick={showMemberOnClick} variant="contained" className="">
+            Project Member
+          </button>
         </div>
       )}
-      <button onClick={showMemberOnClick} variant="contained" className="">
-        Project Member
-      </button>
       {showMember && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
           <div className="relative w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">

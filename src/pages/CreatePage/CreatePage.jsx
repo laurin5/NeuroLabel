@@ -5,28 +5,46 @@ function CreatePage() {
   const projectnameInput = useRef(null);
   const projectdescriptionInput = useRef(null);
   const [file, setFile] = useState(null);
+  const [uploadFile, setUploadFile] = useState(null);
   const [fileName, setFileName] = useState("");
   let navigator = useNavigate();
  
   async function createProject() {
+
+    const formData = new FormData();
+    formData.append("image", uploadFile);
+
+    const response2 = await fetch("http://lizard-studios.at:10187/files", {
+      method: "POST",
+      headers: {
+        sessionid: localStorage.getItem("sessionid"),
+      },
+      body: formData,
+    });
+
+    const responseJSON2 = await response2.json();
+    console.log(responseJSON2.filename);
+
     const response = await fetch("http://lizard-studios.at:10187/projects", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        sessionid: localStorage.getItem("sessionid"),
+        SessionID: localStorage.getItem("sessionid"),
       },
       body: JSON.stringify({
         name: projectnameInput.current.value,
         description: projectdescriptionInput.current.value,
+        image_url: responseJSON2.filename,
       }),
     });
 
     const responseJSON = await response.json();
-    navigator("/projects")
+    console.log(responseJSON);
   }
 
   const handleFileInput = (event) => {
     const file = event.target.files[0];
+    setUploadFile(event.target.files[0]);
 
     if (file) {
       const reader = new FileReader();
@@ -45,7 +63,7 @@ function CreatePage() {
     <div className="w-full h-screen flex justify-center my-10">
       <div className="">
         <h1 className="text-2xl">Neues Projekt erstellen</h1>
-        <form name="lastName" onSubmit={createProject}>
+        <form onSubmit={(e) => e.preventDefault()}>
           <div className="mt-4">
             <label
               className="block text-gray-400 text-[15px] mt-4 mb-1"
@@ -95,6 +113,7 @@ function CreatePage() {
           <button
             className="duration-300 hover:bg-blue-800 bg-blue-900 text-xl text-white w-full mt-4 py-2 rounded-sm font-semibold"
             type="submit"
+            onClick={createProject}
           >
             Erstellen
           </button>
