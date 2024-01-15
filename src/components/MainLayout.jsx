@@ -26,7 +26,7 @@ function MainLayout() {
 
   return (
     <div className="w-full h-screen flex">
-      <div className="h-full w-[200px] bg-gradient-to-br from-gray-800 to-gray-900">
+      <div className="h-full w-[200px] bg-gradient-to-br from-gray-800 to-gray-900 overflow-y-auto">
         <ul className="flex flex-col text-white items-center gap-2">
           <li>
             <Link to="/projects">Overview</Link>

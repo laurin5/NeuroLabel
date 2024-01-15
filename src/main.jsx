@@ -15,6 +15,10 @@ import MobileNavbar from "./components/MobileNavbar.jsx";
 import CreatePage from "./pages/CreatePage/CreatePage.jsx";
 import InvitePeople from "./pages/InvitePeoplePage/InvitePeoplePage.jsx";
 import EntryPage from "./pages/EntryPage/EntryPage.jsx";
+import MainLayout from "./components/MainLayout.jsx";
+
+const isMobile = window.innerWidth <= 768;
+console.log(isMobile);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -23,15 +27,33 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/" element={<App />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route element={<MobileNavbar />}>
-          <Route path="/projects" element={<Dashboard />} />
-          <Route path ="/create" element={<CreatePage/>}></Route>
-          <Route path ="/invite/send" element={<InvitePeople/>}></Route>
-          <Route path="/projects/:id" element={<ProjectDetails />}></Route>
-          <Route path="/invites" element={<InvitePage />}></Route>
-          <Route path="/sessions" element={<SessionsPage />}></Route>
-          <Route path="/projects/datasets/:id/entries" element={<EntryPage />}></Route>
-        </Route>
+        {isMobile ? (
+          <Route element={<MobileNavbar />}>
+            <Route path="/projects" element={<Dashboard />} />
+            <Route path="/create" element={<CreatePage />} />
+            <Route path="/invite/send" element={<InvitePeople />} />
+            <Route path="/projects/:id" element={<ProjectDetails />} />
+            <Route path="/invites" element={<InvitePage />} />
+            <Route path="/sessions" element={<SessionsPage />} />
+            <Route
+              path="/projects/datasets/:id/entries"
+              element={<EntryPage />}
+            />
+          </Route>
+        ) : (
+          <Route element={<MainLayout />}>
+            <Route path="/projects" element={<Dashboard />} />
+            <Route path="/create" element={<CreatePage />} />
+            <Route path="/invite/send" element={<InvitePeople />} />
+            <Route path="/projects/:id" element={<ProjectDetails />} />
+            <Route path="/invites" element={<InvitePage />} />
+            <Route path="/sessions" element={<SessionsPage />} />
+            <Route
+              path="/projects/datasets/:id/entries"
+              element={<EntryPage />}
+            />
+          </Route>
+        )}
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
