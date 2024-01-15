@@ -19,6 +19,7 @@ function Dashboard() {
     let responseJSON = await response.json();
     setProjects(responseJSON.projects);
     console.log(responseJSON);
+    console.log(projects.length > 1 ? "ja" : "nein");
   }
 
   const loadUserDetails = async () => {
@@ -33,6 +34,19 @@ function Dashboard() {
     console.log(responseJSON);
   };
 
+  async function deleteProjects(projectID) {
+    let response = await fetch(`http://lizard-studios.at:10187/projects/${projectID}`, {
+      method: "DELETE",
+      headers: {
+        SessionID: localStorage.getItem("sessionid"),
+      },
+    });
+    const responseJSON = await response.json();
+    console.log(responseJSON);
+    loadProjects();
+    setProjectSettings(!projectSettings);
+  }
+
   useEffect(() => {
     loadProjects();
     loadUserDetails();
@@ -46,15 +60,20 @@ function Dashboard() {
   return (
     <div className="w-full h-screen flex flex-col items-center bg-gray-200 overflow-y-auto pb-10">
       <h1 className="text-center text-xl py-1 tracking-wide mt-[1%] font-semibold">
-        Ihre Projekte
+        Überblick
       </h1>
       <h1 className="w-full text-left pl-[10%] text-lg py-[2%]">
         Willkommen {userDetails.first_name}!
       </h1>
-      <div className="gap-6 p-4 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%] bg-white">
+      {projects.length < 1 && (
+        <div className="w-full h-screen items-center justify-center flex">
+          <p className="max-md:text-lg italic text-2xl">Sie sind derzeit in keinem Projekt!</p>
+        </div>
+      )}
+      <div className={`${projects.length >= 1 ? 'bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] hover:shadow-md' : 'gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%] hover:shadow-md'} `}>
         {projects.map((project, index) => (
           <div
-            className="hover:shadow-md w-full relative border-2 border-gray-200 rounded-sm py-1 text-center text-sm h-auto flex flex-col items-center gap-1 pb-8"
+            className="hover:shadow-md relative border-2 w-full  border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8"
             key={project.id}
           >
             <Link
@@ -64,8 +83,7 @@ function Dashboard() {
               key={project.id}
             >
               <div className="w-full flex items-center flex-col">
-                <img src="firefox.png" className="h-[95px]" alt="" />
-                <div className="w-full border-b-[1px]"></div>
+                <img src={`http://lizard-studios.at:10187/${project.image_url}`} className="h-[150px] w-full object-cover" alt="" />
                 <h2 className="text-lg font-medium tracking-normal">
                   {project.name.length > 20
                     ? `${project.name.slice(0, 20)}...`
@@ -84,7 +102,7 @@ function Dashboard() {
               />
             </button>
             {projectSettings && selectedProjectIndex === index && (
-              <div className="bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] py-2 z-10">
+              <div onClick={() => deleteProjects(project.id)} className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] py-2 z-10">
                 <button className="">Projekt löschen</button>
               </div>
             )}
@@ -93,7 +111,7 @@ function Dashboard() {
         <div>
           {userDetails.is_instructor && (
             <Link to="/create">
-              <button className="border-2 border-gray-200 rounded-md w-full h-[187px] text-white mb-20">
+              <button className="h-[238px] border-2 border-gray-200 w-full text-white">
                 <AddIcon color="primary" />
               </button>
             </Link>
