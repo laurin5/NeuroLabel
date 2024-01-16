@@ -63,7 +63,7 @@ function CreatePage() {
   return (
     <div className="w-full h-screen flex flex-col items-center justify-center bg-gray-200 overflow-y-scroll">
       <form
-        className="w-[35%] max-md:w-[90%] h-auto bg-white pt-[3%] pb-[2%] px-[2%] max-md:py-[10%] shadow-xl"
+        className="w-[40%] max-lg:w-[80%] max-lg:h-screen max-md:my-auto h-auto bg-white px-[2%] py-[2%] max-md:py-[5%] shadow-xl"
         onSubmit={(e) => e.preventDefault()}
       >
         <div className="flex flex-col">
@@ -99,14 +99,26 @@ function CreatePage() {
         </div>
         <div className="">
           <label
-            className="mt-[6%] block text-gray-800 text-lg font-normal tracking-tighter"
+            className="mt-[6%] mb-[2%] block text-gray-800 text-lg font-normal tracking-tighter"
             htmlFor="fileInput"
           >
             Lade ein Bild hoch
           </label>
         </div>
         {file ? (
-          <img className="w-[100%] mb-[6%]" src={file} alt="" />
+          <div className="flex flex-col items-center relative">
+            <img
+              className="max-h-[150px] w-[50%] object-cover mb-[6%]"
+              src={file}
+              alt=""
+            />
+            <p
+              onClick={() => setFile(undefined)}
+              className="absolute top-0 right-10 text-lg cursor-pointer"
+            >
+              &times;
+            </p>
+          </div>
         ) : (
           <div className="relative w-[100%] h-[200px] border-2 border-gray-2 rounded-md 00 mb-[6%] items-center flex justify-center">
             <input
