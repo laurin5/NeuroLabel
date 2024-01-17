@@ -5,6 +5,8 @@ import Select from "@mui/material/Select";
 import { useParams, Link } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API_HOST } from "../../utils/api";
+import SettingsIcon from "@mui/icons-material/Settings";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 function ProjectDetails() {
   const [visible, setVisible] = useState(false);
@@ -22,6 +24,9 @@ function ProjectDetails() {
   const [file, setFile] = useState(null);
   const [selectedLabelId, setSelectedLabelId] = useState("");
   const [thanks, setThanks] = useState(false);
+  const [settingsVisibility, setSettingsVisibility] = useState(false);
+  const [selectedDatasetIndex, setSelectedDatasetIndex] = useState(null);
+  const [datasetSettings, setDatasetSettings] = useState(false);
 
   let datasetName = useRef(null);
   let descriptionInput = useRef(null);
@@ -81,6 +86,11 @@ function ProjectDetails() {
 
   const showMemberOnClick = () => {
     setShowMember(true);
+  };
+
+  const handleDatasetSettings = (index) => {
+    setSelectedDatasetIndex(index);
+    setDatasetSettings(!datasetSettings);
   };
 
   const handleDatasetClick = (datasetId) => {
@@ -181,6 +191,22 @@ function ProjectDetails() {
     setIndex(0);
   };
 
+  async function deleteDataset(datasetId) {
+    let response = await fetch(
+      `http://lizard-studios.at:10187/projects/datasets/${datasetId}`,
+      {
+        method: "DELETE",
+        headers: {
+          SessionID: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    console.log(responseJSON);
+    loadProjectDetails();
+    setDatasetSettings(!datasetSettings);
+  }
+
   const createNewLabel = async () => {
     const response = await fetch(
       `http://lizard-studios.at:10187/projects/datasets/${selectedDatasetId}/labels`,
@@ -220,27 +246,100 @@ function ProjectDetails() {
   };
 
   return (
-    <div className="w-full h-screen flex items-center mt-6 flex-col gap-4">
+    <div className="w-full h-screen flex items-center pt-[2%] flex-col gap-4 bg-gray-200">
       {details.project && (
-        <div className="flex flex-col items-center gap-4">
-          <p className="text-xl">{details.project.name}</p>
-          <div className="border-[1px] border-gray-300 rounded-sm w-2/3">
-            <img src="/public/chrome.png" alt="" className="bg-zinc-100" />
-            <p className="text-center text-md">{details.project.description}</p>
+        <div className="flex flex-row w-full items-center justify-between px-[5%]">
+          <div className="flex flex-col">
+            <p className="text-xl text-left ml-[8%]">{details.project.name}</p>
+            <p className="text-left ml-[8%] text-md italic w-full">
+              {details.project.description}
+            </p>
+          </div>
+          {location.state.isAdmin && (
+            <SettingsIcon
+              className="cursor-pointer"
+              onClick={() => {
+                setSettingsVisibility(!settingsVisibility);
+              }}
+            />
+          )}
+        </div>
+      )}
+      {location.state.isAdmin && settingsVisibility && (
+        <div className="flex flex-col bg-white absolute top-[10%] max-xl:top-[8%] right-[5%] w-[180px] h-fit shadow-xl rounded-md z-10">
+          <div className="w-full items-center my-[6%] flex flex-col">
+            <Link
+              onClick={() => {
+                localStorage.setItem("projectID", details.project.id);
+              }}
+              state={{ isAdmin: location.state.isAdmin }}
+              to={"/invite/send"}
+              className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[16px] py-[2px]"
+            >
+              Personen einladen
+            </Link>
+            <button
+              className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-4 py-[2px] pr-[30px]"
+              onClick={() => {
+                setToggleDatasetVisibility(true);
+              }}
+            >
+              Datensatz erstellen
+            </button>
+            <button
+              onClick={showMemberOnClick}
+              variant="contained"
+              className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-4 py-[2px] pr-[28px]"
+            >
+              Mitglieder ansehen
+            </button>
           </div>
         </div>
       )}
-      {dataset.map((data) => (
-        <button
-          key={data.id}
-          className="w-2/3 bg-blue-900 text-white py-2 rounded-sm mt-4"
-          onClick={() => {
-            handleDatasetClick(data.id);
-          }}
-        >
-          {data.name}
-        </button>
-      ))}
+      {dataset.length < 1 && !location.state.isAdmin && (
+        <div className="mt-[20%] flex items-center justify-center max-md:mt-[40%] max-md:text-md">
+          <p className="italic">
+            In diesem Projekt wurde noch kein Datensatz erstellt!
+          </p>
+        </div>
+      )}
+      <p className="text-xl">Datensätze</p>
+      <div
+        className={`${
+          dataset.length >= 1
+            ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] hover:shadow-md"
+            : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%]"
+        } `}
+      >
+        {dataset.map((data, index) => (
+          <div className="w-full bg-gradient-to-br from-gray-100 to-gray-50 hover:shadow-md relative border-2 h-[150px] border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8">
+            <button
+              key={data.id}
+              className="text-lg relative w-full h-full"
+              onClick={() => {
+                handleDatasetClick(data.id);
+              }}
+            >
+              {data.name}
+            </button>
+            <button onClick={() => handleDatasetSettings(index)}>
+              <MoreVertIcon
+                className="absolute bottom-1 right-1"
+                color="black"
+                fontSize="small"
+              />
+            </button>
+            {datasetSettings && selectedDatasetIndex === index && (
+              <div
+                onClick={() => deleteDataset(data.id)}
+                className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] py-2 z-10"
+              >
+                <button className="">Projekt löschen</button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
       {visible && index === 0 && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50">
           <div className="max-md:w-[90%] w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 justify-evenly">
@@ -441,29 +540,6 @@ function ProjectDetails() {
           </div>
         </div>
       )}
-      {location.state.isAdmin && (
-        <div className="w-full items-center gap-4 flex flex-col">
-          <Link
-            onClick={() => {
-              localStorage.setItem("projectID", details.project.id);
-            }}
-            state={{ isAdmin: location.state.isAdmin }}
-            to={"/invite/send"}
-            className="text-blue-700 border-b border-blue-700"
-          >
-            Personen einladen
-          </Link>
-          <button
-            className="w-2/3 border-[1px] bg-blue-900 text-white py-2 rounded-sm"
-            onClick={() => setToggleDatasetVisibility(true)}
-          >
-            Create Dataset
-          </button>
-          <button onClick={showMemberOnClick} variant="contained" className="">
-            Project Member
-          </button>
-        </div>
-      )}
       {showMember && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
           <div className="relative w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">
@@ -523,6 +599,7 @@ function ProjectDetails() {
                 createNewDataset();
                 setToggleDatasetVisibility(false);
                 loadProjectDetails();
+                setSettingsVisibility(false);
               }}
               className="bg-blue-900 border text-white py-2 rounded-sm max-md:w-[60%]"
             >

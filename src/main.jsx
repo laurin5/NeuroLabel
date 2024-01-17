@@ -16,6 +16,7 @@ import CreatePage from "./pages/CreatePage/CreatePage.jsx";
 import InvitePeople from "./pages/InvitePeoplePage/InvitePeoplePage.jsx";
 import EntryPage from "./pages/EntryPage/EntryPage.jsx";
 import MainLayout from "./components/MainLayout.jsx";
+import ProfilePage from "./pages/ProfilePage/ProfilePage.jsx";
 
 const isMobile = window.innerWidth <= 768;
 console.log(isMobile);
@@ -35,6 +36,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/projects/:id" element={<ProjectDetails />} />
             <Route path="/invites" element={<InvitePage />} />
             <Route path="/sessions" element={<SessionsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route
               path="/projects/datasets/:id/entries"
               element={<EntryPage />}
@@ -48,6 +50,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/projects/:id" element={<ProjectDetails />} />
             <Route path="/invites" element={<InvitePage />} />
             <Route path="/sessions" element={<SessionsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route
               path="/projects/datasets/:id/entries"
               element={<EntryPage />}
