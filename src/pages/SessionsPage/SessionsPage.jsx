@@ -86,7 +86,7 @@ function SessionsPage() {
 
   return (
     <div className="w-full h-screen">
-      <div className="w-full h-screen flex flex-col items-center justify-center gap-3">
+      <div className="w-full h-screen flex flex-col items-center justify-top mt-[2%] gap-3">
         <p>Your Sessions:</p>
         <Button variant="contained" onClick={deleteAllSessions}>
           Delete all

@@ -16,12 +16,12 @@ function MobileNavbar() {
   };
 
   const handleNavigate = (path) => {
-    navigator(path)
-  }
+    navigator(path);
+  };
   return (
-    <div> 
-      <BottomNavigation 
-        sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 10}}
+    <div className="">
+      <BottomNavigation
+        sx={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 10 }}
         value={value}
         onChange={handleChange}
       >
@@ -30,7 +30,7 @@ function MobileNavbar() {
           value="Projects"
           icon={<FolderOpenIcon />}
           onClick={() => {
-            handleNavigate("/projects")
+            handleNavigate("/projects");
           }}
         />
         <BottomNavigationAction
@@ -38,7 +38,7 @@ function MobileNavbar() {
           value="Invites"
           icon={<PersonAddIcon />}
           onClick={() => {
-            handleNavigate("/invites")
+            handleNavigate("/invites");
           }}
         />
         <BottomNavigationAction
@@ -46,7 +46,7 @@ function MobileNavbar() {
           value="Sessions"
           icon={<ClearAllIcon />}
           onClick={() => {
-            handleNavigate("/sessions")
+            handleNavigate("/sessions");
           }}
         />
       </BottomNavigation>

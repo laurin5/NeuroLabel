@@ -1,8 +1,8 @@
 import { Link, Outlet } from "react-router-dom";
-import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { API_HOST } from "../utils/api";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 function MainLayout() {
   const [userDetails, setUserDetails] = useState({});
@@ -46,43 +46,46 @@ function MainLayout() {
 
   return (
     <div className="w-full h-screen flex">
-      <div className="h-full w-[200px] shadow-xl bg-white overflow-y-auto">
+      <div className="h-full min-w-[200px] shadow-xl bg-white overflow-y-auto">
         <div className="flex flex-col items-center mt-6 mb-4 relative">
-          <img
+          <div
             onClick={() => setProfileVisibility(!profileVisibility)}
-            className="w-[80px] h-[80px] object-cover rounded-full shadow-sm"
-            src={`${API_HOST}/${userDetails.profile_picture_url}`}
-            alt=""
-          />
+            className="flex items-center"
+          >
+            <img
+              className="w-[75px] h-[75px] object-cover rounded-full shadow-sm"
+              src={`${API_HOST}/${userDetails.profile_picture_url}`}
+              alt=""
+            />
+            <ExpandMoreIcon fontSize="small" />
+          </div>
           {profileVisibility && (
-            <div className="w-full flex flex-col bg-white absolute top-[103%] max-xl:top-20 h-fit shadow-2xl rounded-md z-10">
-              <div className="w-full items-center my-[6%] flex flex-col">
-                <a
-                  className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
-                  href="/profile"
-                >
-                  Profil
-                  <div className="border-b-[1px]"></div>
-                </a>
-                <a
-                  className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
-                  href="/invites"
-                >
-                  Einladungen
-                </a>
-                <a
-                  className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
-                  href="/sessions"
-                >
-                  Sitzungen
-                </a>
-                <p
-                  className="cursor-pointer text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
-                  onClick={handleLogOut}
-                >
-                  Ausloggen
-                </p>
-              </div>
+            <div className="w-[90%] flex flex-col bg-white absolute top-[103%] max-xl:top-20 h-fit shadow-2xl rounded-md">
+              <a
+                className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
+                href="/profile"
+              >
+                Profil
+              </a>
+              <a
+                className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
+                href="/invites"
+              >
+                Einladungen
+              </a>
+              <a
+                className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
+                href="/sessions"
+              >
+                Sitzungen
+              </a>
+              <div className="border-b-[1px] w-full mt-[5%]"></div>
+              <p
+                className="cursor-pointer text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
+                onClick={handleLogOut}
+              >
+                Ausloggen
+              </p>
             </div>
           )}
         </div>
@@ -90,9 +93,11 @@ function MainLayout() {
           <li>
             <Link to="/projects">Overview</Link>
           </li>
-          <li>
-            <Link to="/create">Create Project</Link>
-          </li>
+          {userDetails.is_instructor && (
+            <li>
+              <Link to="/create">Create Project</Link>
+            </li>
+          )}
         </ul>
       </div>
       <Outlet />

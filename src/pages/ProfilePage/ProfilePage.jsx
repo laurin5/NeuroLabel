@@ -97,7 +97,7 @@ const ProfilePage = () => {
           {userDetails.last_name} {userDetails.first_name}
         </p>
       </div>
-      <div className="w-[90%] bg-white flex flex-col p-6 rounded-sm hover:shadow-md">
+      <div className="w-[75%] bg-white flex flex-col p-6 rounded-sm hover:shadow-md">
         <div className="flex justify-between mb-[2%]">
           <label htmlFor="userLastName">Nachname</label>
           <input
@@ -127,13 +127,13 @@ const ProfilePage = () => {
         {file ? (
           <div className="flex flex-col items-center relative">
             <img
-              className="max-h-[250px] w-[50%] object-cover mb-[6%]"
+              className="h-[200px] w-[30%] object-cover mb-[6%]"
               src={file}
               alt=""
             />
             <p
               onClick={() => setFile(undefined)}
-              className="absolute top-0 right-4 text-lg cursor-pointer"
+              className="absolute top-0 right-[20%] text-lg cursor-pointer"
             >
               &times;
             </p>

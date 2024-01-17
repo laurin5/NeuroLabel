@@ -44,6 +44,22 @@ function Dashboard() {
     setProjectSettings(!projectSettings);
   };
 
+  async function deleteProjects(projectID) {
+    let response = await fetch(
+      `http://lizard-studios.at:10187/projects/${projectID}`,
+      {
+        method: "DELETE",
+        headers: {
+          SessionID: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    console.log(responseJSON);
+    loadProjects();
+    setProjectSettings(!projectSettings);
+  }
+
   return (
     <div className="w-full h-screen flex flex-col items-center bg-gray-200 overflow-y-auto pb-10">
       <h1 className="text-center text-xl py-1 tracking-wide mt-[1%] font-semibold">
@@ -63,7 +79,7 @@ function Dashboard() {
         className={`${
           projects.length >= 1
             ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] hover:shadow-md"
-            : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%] hover:shadow-md"
+            : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%]"
         } `}
       >
         {projects.map((project, index) => (
@@ -111,7 +127,7 @@ function Dashboard() {
           </div>
         ))}
         <div>
-          {userDetails.is_instructor && (
+          {userDetails.is_instructor && projects.length >= 1 && (
             <Link to="/create">
               <button className="h-[238px] border-2 border-gray-200 w-full text-white">
                 <AddIcon color="primary" />

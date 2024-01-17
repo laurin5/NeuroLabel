@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { API_HOST } from "../../utils/api";
 import SettingsIcon from "@mui/icons-material/Settings";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import AddIcon from "@mui/icons-material/Add";
 
 function ProjectDetails() {
   const [visible, setVisible] = useState(false);
@@ -121,6 +122,7 @@ function ProjectDetails() {
         }),
       }
     );
+    loadProjectDetails();
   };
 
   const createNewTask = async () => {
@@ -250,7 +252,9 @@ function ProjectDetails() {
       {details.project && (
         <div className="flex flex-row w-full items-center justify-between px-[5%]">
           <div className="flex flex-col">
-            <p className="text-xl text-left ml-[8%]">{details.project.name}</p>
+            <p className="text-xl w-full text-left ml-[8%]">
+              {details.project.name}
+            </p>
             <p className="text-left ml-[8%] text-md italic w-full">
               {details.project.description}
             </p>
@@ -279,14 +283,6 @@ function ProjectDetails() {
               Personen einladen
             </Link>
             <button
-              className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-4 py-[2px] pr-[30px]"
-              onClick={() => {
-                setToggleDatasetVisibility(true);
-              }}
-            >
-              Datensatz erstellen
-            </button>
-            <button
               onClick={showMemberOnClick}
               variant="contained"
               className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-4 py-[2px] pr-[28px]"
@@ -303,7 +299,8 @@ function ProjectDetails() {
           </p>
         </div>
       )}
-      <p className="text-xl">Datensätze</p>
+      {dataset.length >= 1 ||
+        (location.state.isAdmin && <p className="text-xl">Datensätze</p>)}
       <div
         className={`${
           dataset.length >= 1
@@ -334,11 +331,23 @@ function ProjectDetails() {
                 onClick={() => deleteDataset(data.id)}
                 className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] py-2 z-10"
               >
-                <button className="">Projekt löschen</button>
+                <button className="">Datensatz löschen</button>
               </div>
             )}
           </div>
         ))}
+        {location.state.isAdmin && (
+          <div>
+            <button
+              onClick={() => {
+                setToggleDatasetVisibility(true);
+              }}
+              className="h-[150px] border-2 border-gray-200  w-full text-white"
+            >
+              <AddIcon color="primary" />
+            </button>
+          </div>
+        )}
       </div>
       {visible && index === 0 && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50">
@@ -597,9 +606,8 @@ function ProjectDetails() {
             <button
               onClick={() => {
                 createNewDataset();
-                setToggleDatasetVisibility(false);
-                loadProjectDetails();
                 setSettingsVisibility(false);
+                setToggleDatasetVisibility(false);
               }}
               className="bg-blue-900 border text-white py-2 rounded-sm max-md:w-[60%]"
             >
