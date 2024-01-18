@@ -299,26 +299,29 @@ function ProjectDetails() {
           </p>
         </div>
       )}
-      {dataset.length >= 1 ||
-        (location.state.isAdmin && <p className="text-xl">Datensätze</p>)}
+      {dataset.length >= 1 && !location.state.isAdmin && (
+        <p className="text-xl">Datensätze</p>
+      )}
+      {location.state.isAdmin && <p className="text-xl">Datensätze</p>}
       <div
         className={`${
           dataset.length >= 1
             ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] hover:shadow-md"
-            : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%]"
+            : `gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2 xl:grid-cols-4 w-[92%] ${
+                location.state.isAdmin ? "bg-white" : ""
+              }`
         } `}
       >
         {dataset.map((data, index) => (
           <div className="w-full bg-gradient-to-br from-gray-100 to-gray-50 hover:shadow-md relative border-2 h-[150px] border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8">
-            <button
+            <Link
               key={data.id}
               className="text-lg relative w-full h-full"
-              onClick={() => {
-                handleDatasetClick(data.id);
-              }}
+              to={`/projects/datasets/${data.id}`}
+              state={{ dataId: data.id }}
             >
               {data.name}
-            </button>
+            </Link>
             <button onClick={() => handleDatasetSettings(index)}>
               <MoreVertIcon
                 className="absolute bottom-1 right-1"
@@ -342,7 +345,7 @@ function ProjectDetails() {
               onClick={() => {
                 setToggleDatasetVisibility(true);
               }}
-              className="h-[150px] border-2 border-gray-200  w-full text-white"
+              className="h-[150px] border-2 w-full text-white border-gray-200"
             >
               <AddIcon color="primary" />
             </button>
@@ -585,22 +588,24 @@ function ProjectDetails() {
       )}
       {toggleDatasetVisibility && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
-          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">
+          <div className="w-1/3 h-2/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%] absolute">
             <p
               onClick={() => {
                 setToggleDatasetVisibility(false);
                 setTasks([]);
               }}
-              className="text-2xl absolute top-[14%] left-[85%] cursor-pointer"
+              className="text-2xl absolute top-0 right-3 cursor-pointer"
             >
               &times;
             </p>
-            <p className="font-semibold">Dataset</p>
-            <p className="text-center">Enter Dataset Name</p>
+            <p className="font-semibold text-xl mt-[3%] mb-[5%]">
+              Datensatz erstellen
+            </p>
+            <p className="text-center">Hier Datensatz Namen eingeben</p>
             <input
               ref={datasetName}
               type="text"
-              className="border-2 pl-2"
+              className="border shadow appearance-none rounded w-[60%] text-md text-gray-700 leading-tight focus:outline-none pl-2 py-[2%]"
               placeholder="Name"
             />
             <button
@@ -609,7 +614,7 @@ function ProjectDetails() {
                 setSettingsVisibility(false);
                 setToggleDatasetVisibility(false);
               }}
-              className="bg-blue-900 border text-white py-2 rounded-sm max-md:w-[60%]"
+              className="bg-blue-600 border text-white py-2 max-md:w-[60%] w-[60%] rounded-md mt-[12%]"
             >
               Submit
             </button>

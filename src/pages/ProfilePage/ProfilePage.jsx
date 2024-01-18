@@ -101,6 +101,7 @@ const ProfilePage = () => {
         <div className="flex justify-between mb-[2%]">
           <label htmlFor="userLastName">Nachname</label>
           <input
+            className="border shadow appearance-none rounded text-md text-gray-700 leading-tight focus:outline-none pl-2 py-2"
             ref={lastNameInput}
             type="text"
             name="userLastName"
@@ -110,6 +111,7 @@ const ProfilePage = () => {
         <div className="flex justify-between">
           <label htmlFor="userFirstName">Vorname</label>
           <input
+            className="border shadow appearance-none rounded text-md text-gray-700 leading-tight focus:outline-none pl-2 py-2"
             ref={firstNameInput}
             type="text"
             name="userFirstName"
