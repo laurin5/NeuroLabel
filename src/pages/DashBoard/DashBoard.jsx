@@ -109,13 +109,15 @@ function Dashboard() {
                 </p>
               </div>
             </Link>
-            <button onClick={() => handleProjectSettingsClick(index)}>
-              <MoreVertIcon
-                className="absolute bottom-2 right-2"
-                color="black"
-                fontSize="small"
-              />
-            </button>
+            {userDetails.is_instructor && (
+              <button onClick={() => handleProjectSettingsClick(index)}>
+                <MoreVertIcon
+                  className="absolute bottom-2 right-2"
+                  color="black"
+                  fontSize="small"
+                />
+              </button>
+            )}
             {projectSettings && selectedProjectIndex === index && (
               <div
                 onClick={() => deleteProjects(project.id)}

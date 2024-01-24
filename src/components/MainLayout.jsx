@@ -2,11 +2,9 @@ import { Link, Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { API_HOST } from "../utils/api";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 function MainLayout() {
   const [userDetails, setUserDetails] = useState({});
-  const [profileVisibility, setProfileVisibility] = useState(false);
 
   let navigator = useNavigate();
 
@@ -45,60 +43,41 @@ function MainLayout() {
   };
 
   return (
-    <div className="w-full h-screen flex">
-      <div className="h-full min-w-[200px] shadow-xl bg-white overflow-y-auto">
-        <div className="flex flex-col items-center mt-6 mb-4 relative">
-          <div
-            onClick={() => setProfileVisibility(!profileVisibility)}
-            className="flex items-center"
+    <div className="w-full">
+      <div className="w-full shadow-md bg-white flex items-center justify-around pt-2 sticky top-0 z-10">
+        <img
+          onClick={() => navigator("/projects")}
+          src="/Neuro_Label.svg"
+          className="object-cover w-[50px]"
+        />
+        <div className="w-full flex items-center justify-center gap-32">
+          <a
+            className="text-gray-700 text-md hover:border-b-2 hover:border-blue-600 duration-150"
+            href="/invites"
           >
-            <img
-              className="w-[75px] h-[75px] object-cover rounded-full shadow-sm"
-              src={`${API_HOST}/${userDetails.profile_picture_url}`}
-              alt=""
-            />
-            <ExpandMoreIcon fontSize="small" />
-          </div>
-          {profileVisibility && (
-            <div className="w-[90%] flex flex-col bg-white absolute top-[103%] max-xl:top-20 h-fit shadow-2xl rounded-md">
-              <a
-                className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
-                href="/profile"
-              >
-                Profil
-              </a>
-              <a
-                className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
-                href="/invites"
-              >
-                Einladungen
-              </a>
-              <a
-                className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
-                href="/sessions"
-              >
-                Sitzungen
-              </a>
-              <div className="border-b-[1px] w-full mt-[5%]"></div>
-              <p
-                className="cursor-pointer text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[20px] py-[2px]"
-                onClick={handleLogOut}
-              >
-                Ausloggen
-              </p>
-            </div>
-          )}
+            Einladungen
+          </a>
+          <a
+            className="text-gray-700 text-md hover:border-b-2 hover:border-blue-600 duration-150"
+            href="/sessions"
+          >
+            Sitzungen
+          </a>
+          <p
+            className="cursor-pointer text-gray-700 hover:border-b-2 hover:border-blue-600 duration-150"
+            onClick={handleLogOut}
+          >
+            Ausloggen
+          </p>
         </div>
-        <ul className="flex flex-col text-black items-center gap-2">
-          <li>
-            <Link to="/projects">Overview</Link>
-          </li>
-          {userDetails.is_instructor && (
-            <li>
-              <Link to="/create">Create Project</Link>
-            </li>
-          )}
-        </ul>
+        <div className="flex justify-end mr-4">
+          <img
+            onClick={() => navigator("/profile")}
+            className="w-[50px] h-[50px] object-cover rounded-full shadow-sm mb-2"
+            src={`${API_HOST}/${userDetails.profile_picture_url}`}
+            alt=""
+          />
+        </div>
       </div>
       <Outlet />
     </div>

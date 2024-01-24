@@ -67,9 +67,7 @@ function ProjectDetails() {
 
     let responseJSON = await response.json();
     setDetails(responseJSON);
-    console.log(responseJSON);
     setDataset(responseJSON.datasets);
-    console.log(responseJSON.members);
   }
 
   useEffect(() => {
@@ -140,7 +138,6 @@ function ProjectDetails() {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
   };
 
   const fetchTasks = async () => {
@@ -154,13 +151,11 @@ function ProjectDetails() {
     );
     const responseJSON = await response.json();
     setTasks(responseJSON.tasks);
-    console.log(responseJSON);
   };
 
   const uploadFile = async () => {
     const formData = new FormData();
     formData.append("image", file);
-    console.log(file);
 
     const response1 = await fetch("http://lizard-studios.at:10187/files", {
       method: "POST",
@@ -170,7 +165,6 @@ function ProjectDetails() {
       body: formData,
     });
     const responseJSON1 = await response1.json();
-    console.log(responseJSON1);
 
     const response2 = await fetch(
       `${API_HOST}/projects/datasets/${selectedDatasetId}/entries`,
@@ -187,8 +181,6 @@ function ProjectDetails() {
       }
     );
     const responseJSON2 = await response2.json();
-    console.log(responseJSON2);
-    console.log(selectedLabelId);
     setThanks(true);
     setIndex(0);
   };
@@ -204,7 +196,6 @@ function ProjectDetails() {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
     loadProjectDetails();
     setDatasetSettings(!datasetSettings);
   }
@@ -224,7 +215,6 @@ function ProjectDetails() {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
     setSelectedLabelId(responseJSON.id);
   };
 
@@ -239,7 +229,6 @@ function ProjectDetails() {
     );
     const responseJSON = await response.json();
     setLabels(responseJSON.labels);
-    console.log(responseJSON);
   };
 
   const reload = () => {
@@ -314,29 +303,40 @@ function ProjectDetails() {
       >
         {dataset.map((data, index) => (
           <div className="w-full bg-gradient-to-br from-gray-100 to-gray-50 hover:shadow-md relative border-2 h-[150px] border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8">
-            <Link
+            <div
               key={data.id}
-              className="text-lg relative w-full h-full"
-              to={`/projects/datasets/${data.id}`}
-              state={{ dataId: data.id }}
+              className="text-lg relative w-full h-full flex justify-center items-center"
             >
               {data.name}
-            </Link>
-            <button onClick={() => handleDatasetSettings(index)}>
-              <MoreVertIcon
-                className="absolute bottom-1 right-1"
-                color="black"
-                fontSize="small"
-              />
-            </button>
-            {datasetSettings && selectedDatasetIndex === index && (
-              <div
-                onClick={() => deleteDataset(data.id)}
-                className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] py-2 z-10"
-              >
-                <button className="">Datensatz löschen</button>
-              </div>
+            </div>
+            {location.state.isAdmin && (
+              <button onClick={() => handleDatasetSettings(index)}>
+                <MoreVertIcon
+                  className="absolute bottom-1 right-1"
+                  color="black"
+                  fontSize="small"
+                />
+              </button>
             )}
+            {datasetSettings &&
+              selectedDatasetIndex === index &&
+              location.state.isAdmin && (
+                <div className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] z-10 items-start flex flex-col">
+                  <button
+                    onClick={() => deleteDataset(data.id)}
+                    className="hover:bg-gray-50 w-full text-left pl-2 py-[3%]"
+                  >
+                    Datensatz löschen
+                  </button>
+                  <Link
+                    to={`/projects/datasets/${data.id}`}
+                    state={{ dataId: data.id }}
+                    className="hover:bg-gray-50 w-full text-left pl-2 py-[3%] "
+                  >
+                    Datensatz bearbeiten
+                  </Link>
+                </div>
+              )}
           </div>
         ))}
         {location.state.isAdmin && (
@@ -563,26 +563,31 @@ function ProjectDetails() {
             >
               &times;
             </p>
-            {details.members &&
-              details.members.map((member) => (
-                <div
-                  key={details.members.id}
-                  className="flex gap-2 items-center"
-                >
-                  <p>
-                    {member.first_name} {member.last_name}
+            <div className="flex w-full justify-around">
+              <div className="flex flex-col w-full">
+                <div className="flex w-full justify-around">
+                  <p className="font-semibold tracking-wider text-lg">
+                    Vorname/Nachname
                   </p>
-                  {location.state.isAdmin && (
-                    <Button
-                      onClick={() => {
-                        kickUser(member.email);
-                      }}
-                    >
-                      Kick
-                    </Button>
-                  )}
+                  <p className="font-semibold tracking-wider text-lg">Rolle</p>
                 </div>
-              ))}
+                {details.members &&
+                  details.members.map((member) => (
+                    <div
+                      className="flex flex-row justify-around w-full"
+                      key={member.id}
+                    >
+                      <p>
+                        {member.first_name} {member.last_name}
+                      </p>
+                      {member.is_participant && !member.is_instructor && (
+                        <p>TeilnehmerIn</p>
+                      )}
+                      {member.is_instructor && <p>LehrerIn</p>}
+                    </div>
+                  ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
