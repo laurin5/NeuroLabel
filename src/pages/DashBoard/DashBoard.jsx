@@ -19,7 +19,6 @@ function Dashboard() {
     let responseJSON = await response.json();
     setProjects(responseJSON.projects);
     console.log(responseJSON);
-    console.log(projects.length > 1 ? "ja" : "nein");
   }
 
   const loadUserDetails = async () => {
@@ -61,14 +60,14 @@ function Dashboard() {
   }
 
   return (
-    <div className="w-full h-screen flex flex-col items-center bg-gray-200 overflow-y-auto pb-10">
+    <div className="w-full h-full flex flex-col items-center bg-gray-200 pb-10">
       <h1 className="text-center text-xl py-1 tracking-wide mt-[1%] font-semibold">
         Überblick
       </h1>
       <h1 className="w-full text-left pl-[10%] text-lg py-[2%]">
         Willkommen {userDetails.first_name}!
       </h1>
-      {projects.length < 1 && (
+      {projects.length < 1 && !userDetails.is_admin && (
         <div className="w-full h-screen items-center justify-center flex">
           <p className="max-md:text-lg italic text-2xl">
             Sie sind derzeit in keinem Projekt!
@@ -79,7 +78,7 @@ function Dashboard() {
         className={`${
           projects.length >= 1
             ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] hover:shadow-md"
-            : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%]"
+            : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%] bg-white"
         } `}
       >
         {projects.map((project, index) => (
@@ -129,7 +128,7 @@ function Dashboard() {
           </div>
         ))}
         <div>
-          {userDetails.is_instructor && projects.length >= 1 && (
+          {userDetails.is_admin && (
             <Link to="/create">
               <button className="h-[238px] border-2 border-gray-200 w-full text-white">
                 <AddIcon color="primary" />

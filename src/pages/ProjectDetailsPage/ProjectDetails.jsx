@@ -1,4 +1,3 @@
-import Button from "@mui/material/Button";
 import { useEffect, useState, useRef } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -8,6 +7,7 @@ import { API_HOST } from "../../utils/api";
 import SettingsIcon from "@mui/icons-material/Settings";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 function ProjectDetails() {
   const [visible, setVisible] = useState(false);
@@ -28,6 +28,8 @@ function ProjectDetails() {
   const [settingsVisibility, setSettingsVisibility] = useState(false);
   const [selectedDatasetIndex, setSelectedDatasetIndex] = useState(null);
   const [datasetSettings, setDatasetSettings] = useState(false);
+  const [memberVisibility, setMemberVisibility] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState(null);
 
   let datasetName = useRef(null);
   let descriptionInput = useRef(null);
@@ -55,6 +57,25 @@ function ProjectDetails() {
     loadProjectDetails();
   }
 
+  async function promoteUser(emailInput) {
+    let response = await fetch(
+      `http://lizard-studios.at:10187/projects/${params.id}/admins/toggle`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          SessionID: localStorage.getItem("sessionid"),
+        },
+        method: "PUT",
+        body: JSON.stringify({
+          email: emailInput,
+        }),
+      }
+    );
+    let responseJSON = await response.json();
+    console.log(responseJSON);
+    loadProjectDetails();
+  }
+
   async function loadProjectDetails() {
     let response = await fetch(
       `http://lizard-studios.at:10187/projects/${params.id}/details`,
@@ -68,6 +89,7 @@ function ProjectDetails() {
     let responseJSON = await response.json();
     setDetails(responseJSON);
     setDataset(responseJSON.datasets);
+    console.log(responseJSON);
   }
 
   useEffect(() => {
@@ -281,20 +303,20 @@ function ProjectDetails() {
           </div>
         </div>
       )}
-      {dataset.length < 1 && !location.state.isAdmin && (
+      {dataset && dataset.length < 1 && !location.state.isAdmin && (
         <div className="mt-[20%] flex items-center justify-center max-md:mt-[40%] max-md:text-md">
           <p className="italic">
             In diesem Projekt wurde noch kein Datensatz erstellt!
           </p>
         </div>
       )}
-      {dataset.length >= 1 && !location.state.isAdmin && (
+      {dataset && dataset.length >= 1 && !location.state.isAdmin && (
         <p className="text-xl">Datensätze</p>
       )}
       {location.state.isAdmin && <p className="text-xl">Datensätze</p>}
       <div
         className={`${
-          dataset.length >= 1
+          dataset && dataset.length >= 1
             ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] hover:shadow-md"
             : `gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2 xl:grid-cols-4 w-[92%] ${
                 location.state.isAdmin ? "bg-white" : ""
@@ -556,37 +578,77 @@ function ProjectDetails() {
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
           <div className="relative w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">
             <p
-              className="cursor-pointer absolute top-0 right-2 text-2xl"
+              className="cursor-pointer absolute top-2 right-4 text-2xl"
               onClick={() => {
                 setShowMember(false);
               }}
             >
               &times;
             </p>
-            <div className="flex w-full justify-around">
-              <div className="flex flex-col w-full">
-                <div className="flex w-full justify-around">
-                  <p className="font-semibold tracking-wider text-lg">
-                    Vorname/Nachname
-                  </p>
-                  <p className="font-semibold tracking-wider text-lg">Rolle</p>
-                </div>
-                {details.members &&
-                  details.members.map((member) => (
-                    <div
-                      className="flex flex-row justify-around w-full"
-                      key={member.id}
-                    >
-                      <p>
-                        {member.first_name} {member.last_name}
-                      </p>
-                      {member.is_participant && !member.is_instructor && (
-                        <p>TeilnehmerIn</p>
-                      )}
-                      {member.is_instructor && <p>LehrerIn</p>}
-                    </div>
-                  ))}
+            <div className="w-full flex flex-col justify-around">
+              <div className="flex w-full justify-around border-b-2">
+                <p className="font-semibold tracking-wider text-lg">
+                  Vorname/Nachname
+                </p>
+                <p className="font-semibold tracking-wider text-lg">Rolle</p>
               </div>
+              {details.members &&
+                details.members.map((member, index) => (
+                  <div
+                    className={`${
+                      index % 2 == 1
+                        ? "bg-gray-100 flex flex-row justify-between w-full items-center border-b-2 pt-2"
+                        : "bg-white flex flex-row justify-between w-full items-center border-b-2 pt-2"
+                    }`}
+                    key={member.id}
+                  >
+                    <div className="flex items-center gap-2 justify-start ml-[17%] w-full mb-2">
+                      <img
+                        src={`${API_HOST}/${member.profile_picture_url}`}
+                        className="w-[50px] h-[50px] object-cover rounded-full"
+                      />
+                      <p>
+                        {member.first_name} {member.last_name}{" "}
+                        {member.is_participant && !member.is_instructor && (
+                          <span className="absolute right-[12%]">
+                            TeilnehmerIn
+                          </span>
+                        )}
+                        {member.is_admin && (
+                          <span className="absolute right-[16%]">LehrerIn</span>
+                        )}
+                      </p>
+                      {!member.is_admin && (
+                        <MoreHorizIcon
+                          onClick={() => {
+                            setMemberVisibility(!memberVisibility);
+                            setSelectedMemberId(index);
+                          }}
+                          className="absolute right-2 cursor-pointer"
+                        />
+                      )}
+                      {memberVisibility && selectedMemberId == index && (
+                        <div className="absolute top-[31%] right-[5%] bg-white p-3 rounded-md shadow-lg z-10">
+                          <p
+                            onClick={() => kickUser(member.email)}
+                            className="text-red-600 cursor-pointer"
+                          >
+                            Teilnehmer kicken
+                          </p>
+                          <p
+                            onClick={() => {
+                              promoteUser(member.email);
+                              setMemberVisibility(!memberVisibility);
+                            }}
+                            className="text-gray-700 cursor-pointer"
+                          >
+                            Zu Admin machen
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
             </div>
           </div>
         </div>
