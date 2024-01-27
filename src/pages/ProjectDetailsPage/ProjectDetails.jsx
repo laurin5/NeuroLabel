@@ -281,7 +281,7 @@ function ProjectDetails() {
         </div>
       )}
       {location.state.isAdmin && settingsVisibility && (
-        <div className="flex flex-col bg-white absolute top-[10%] max-xl:top-[8%] right-[5%] w-[180px] h-fit shadow-xl rounded-md z-10">
+        <div className="flex flex-col bg-white absolute top-[16%] max-xl:top-[8%] right-[5%] w-[180px] h-fit shadow-xl rounded-md z-10">
           <div className="w-full items-center my-[6%] flex flex-col">
             <Link
               onClick={() => {
@@ -353,7 +353,7 @@ function ProjectDetails() {
                   <Link
                     to={`/projects/datasets/${data.id}`}
                     state={{ dataId: data.id }}
-                    className="hover:bg-gray-50 w-full text-left pl-2 py-[3%] "
+                    className="hover:bg-gray-50 w-full text-left pl-2 py-[3%]"
                   >
                     Datensatz bearbeiten
                   </Link>
