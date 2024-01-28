@@ -609,12 +609,12 @@ function ProjectDetails() {
                       />
                       <p>
                         {member.first_name} {member.last_name}{" "}
-                        {member.is_participant && !member.is_instructor && (
+                        {member.is_participant && !location.state.isAdmin && (
                           <span className="absolute right-[12%]">
                             TeilnehmerIn
                           </span>
                         )}
-                        {member.is_admin && (
+                        {location.state.isAdmin && (
                           <span className="absolute right-[16%]">LehrerIn</span>
                         )}
                       </p>

@@ -28,6 +28,7 @@ const DatasetDetails = () => {
   const [selectedLabel, setSelectedLabel] = useState(null);
 
   const newDatasetName = async() => {
+    console.log(renameDatasetInput.current.value);
     const response = await fetch(
       `http://lizard-studios.at:10187/projects/datasets/${location.state.dataId}`,
       {
@@ -37,7 +38,7 @@ const DatasetDetails = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: renameDatasetInput.current.value,
+          dataset_name: renameDatasetInput.current.value,
         }),
       }
     );
@@ -55,7 +56,7 @@ const DatasetDetails = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          task: renameTaskInput.current.value,
+          new_task: renameTaskInput.current.value,
         }),
       }
     );
@@ -75,7 +76,7 @@ const DatasetDetails = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          label: renameLabelInput.current.value,
+          new_label: renameLabelInput.current.value,
         }),
       }
     );

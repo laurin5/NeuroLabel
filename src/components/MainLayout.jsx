@@ -44,7 +44,7 @@ function MainLayout() {
 
   return (
     <div className="w-full">
-      <div className="w-full shadow-md bg-white flex items-center justify-between sticky top-0 z-10 py-4 px-8">
+      <div className="w-full shadow-md bg-stone-50 flex items-center justify-between sticky top-0 z-10 py-4 px-8">
         <img
           onClick={() => navigator("/projects")}
           src="/Neuro_Label.png"

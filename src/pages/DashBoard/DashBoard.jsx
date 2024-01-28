@@ -83,7 +83,7 @@ function Dashboard() {
       >
         {projects.map((project, index) => (
           <div
-            className="hover:shadow-md relative border-2 w-full  border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8"
+            className="hover:shadow-md relative border-2 w-full border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8"
             key={project.id}
           >
             <Link
