@@ -101,10 +101,6 @@ function ProjectDetails() {
     }
   }, [selectedDatasetId]);
 
-  const handleButtonClick = () => {
-    setVisible(true);
-  };
-
   const showMemberOnClick = () => {
     setShowMember(true);
   };
@@ -112,11 +108,6 @@ function ProjectDetails() {
   const handleDatasetSettings = (index) => {
     setSelectedDatasetIndex(index);
     setDatasetSettings(!datasetSettings);
-  };
-
-  const handleDatasetClick = (datasetId) => {
-    setSelectedDatasetId(datasetId);
-    handleButtonClick();
   };
 
   const handleLabelClick = (labelId) => {
@@ -266,7 +257,7 @@ function ProjectDetails() {
             <p className="text-xl w-full text-left ml-[8%]">
               {details.project.name}
             </p>
-            <p className="text-left ml-[8%] text-md italic w-full">
+            <p className="text-left ml-[8%] text-md italic w-full w-[80%]">
               {details.project.description}
             </p>
           </div>
@@ -325,12 +316,14 @@ function ProjectDetails() {
       >
         {dataset.map((data, index) => (
           <div className="w-full bg-gradient-to-br from-gray-100 to-gray-50 hover:shadow-md relative border-2 h-[150px] border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8">
-            <div
+            <Link
+              to="/upload"
+              state={{ datasetId: data.id }}
               key={data.id}
               className="text-lg relative w-full h-full flex justify-center items-center"
             >
               {data.name}
-            </div>
+            </Link>
             {location.state.isAdmin && (
               <button onClick={() => handleDatasetSettings(index)}>
                 <MoreVertIcon
@@ -357,6 +350,13 @@ function ProjectDetails() {
                   >
                     Datensatz bearbeiten
                   </Link>
+                  <Link
+                    state={{ id: data.id }}
+                    className="hover:bg-gray-50 w-full text-left pl-2 py-[3%]"
+                    to={`/projects/datasets/${data.id}/entries`}
+                  >
+                    Schau die Entries dieses Datasets an
+                  </Link>
                 </div>
               )}
           </div>
@@ -374,206 +374,6 @@ function ProjectDetails() {
           </div>
         )}
       </div>
-      {visible && index === 0 && (
-        <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50">
-          <div className="max-md:w-[90%] w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 justify-evenly">
-            <p
-              onClick={() => {
-                setVisible(false);
-              }}
-              className="text-2xl absolute top-[14%] left-[85%] cursor-pointer"
-            >
-              &times;
-            </p>
-            <div className="max-md:w-[90%] w-full h-screen bg-white rounded-md flex items-center flex-col pt-8 justify-evenly">
-              {location.state.isAdmin && (
-                <div className="flex flex-col gap-4">
-                  <Link
-                    state={{ id: selectedDatasetId }}
-                    className="text-blue-700 border-b-[1px] cursor-pointer"
-                    to={`/projects/datasets/${selectedDatasetId}/entries`}
-                  >
-                    Schau die Entries dieses Datasets an
-                  </Link>
-                  <p
-                    onClick={() => setToggleTaskVisibility(true)}
-                    className="text-blue-700 border-b-[1px] cursor-pointer"
-                  >
-                    Task erstellen
-                  </p>
-                  <p
-                    onClick={() => {
-                      setToggleLabelVisibility(true);
-                    }}
-                    className="text-blue-700 border-b-[1px] cursor-pointer"
-                  >
-                    Labels erstellen
-                  </p>
-                </div>
-              )}
-
-              {toggleLabelVisibility && (
-                <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0">
-                  <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 justify-evenly max-md:w-[90%]">
-                    <p
-                      onClick={() => {
-                        setToggleLabelVisibility(false);
-                      }}
-                      className="text-2xl absolute top-[14%] left-[85%] cursor-pointer"
-                    >
-                      &times;
-                    </p>
-                    <p>Name des Labels welches Sie erstellen wollen!</p>
-                    <label htmlFor="labelName">Name</label>
-                    <input
-                      type="text"
-                      placeholder="Name..."
-                      name="labelName"
-                      ref={labelNameInput}
-                    />
-
-                    <button
-                      onClick={() => {
-                        createNewLabel();
-                        setToggleLabelVisibility(false);
-                        reload();
-                      }}
-                    >
-                      Submit
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {toggleTaskVisibility && (
-                <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0">
-                  <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 justify-evenly max-md:w-[90%]">
-                    <p
-                      onClick={() => {
-                        setToggleTaskVisibility(false);
-                      }}
-                      className="text-2xl absolute top-[14%] left-[85%] cursor-pointer"
-                    >
-                      &times;
-                    </p>
-                    <p>Geben Sie die Beschreibung ihrer Task ein!</p>
-
-                    <label htmlFor="description">Beschreibung</label>
-                    <input
-                      type="text"
-                      placeholder="Beschreibung..."
-                      name="description"
-                      ref={descriptionInput}
-                    />
-
-                    <button
-                      onClick={() => {
-                        createNewTask();
-                        setToggleTaskVisibility(false);
-                        reload();
-                      }}
-                    >
-                      Submit
-                    </button>
-                  </div>
-                </div>
-              )}
-              {thanks && (
-                <h1 className="font-semibold">Danke fürs mitmachen!</h1>
-              )}
-              <button
-                className="border-b-[1px] border-blue-700 text-blue-700"
-                onClick={() => {
-                  setIndex(1);
-                }}
-              >
-                Hochladen
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {index == 1 && (
-        <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
-          <div className="w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%] overflow-scroll">
-            <p
-              onClick={() => {
-                setVisible(setIndex(0));
-              }}
-              className="text-2xl absolute top-[14%] left-[85%] cursor-pointer"
-            >
-              &times;
-            </p>
-            {tasks.map((task) => (
-              <div
-                key={task.task_no}
-                className="w-full flex flex-col items-center"
-              >
-                <button
-                  onClick={() => setIndex(index + 1)}
-                  className="w-2/3 border-[1px] bg-blue-900 text-white py-2 rounded-sm"
-                >
-                  {task.task_no}: {task.task}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      {index == 2 && (
-        <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
-          <div className="relative w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">
-            <div className=" mt-4 max-md:w-[60%] flex flex-col">
-              <p
-                onClick={() => {
-                  setVisible(setIndex(0));
-                  setSelectedLabel("");
-                }}
-                className="text-3xl absolute cursor-pointer top-0 right-4"
-              >
-                &times;
-              </p>
-            </div>
-            <h1 className="text-xl font-semibold tracking-wide">
-              Laden Sie hier ihr Bild hoch!
-            </h1>
-            <p className="text-md">Geben Sie ihrem Bild ein Label</p>
-            <Select
-              className="w-[30%]"
-              label="Label auswählen"
-              value={selectedLabel}
-              onChange={(e) => {
-                setSelectedLabel(e.target.value);
-                handleLabelClick(
-                  labels.find((label) => label.label === e.target.value)?.id
-                );
-              }}
-            >
-              {labels.map((label) => (
-                <MenuItem key={label.id} value={label.label}>
-                  {label.label}
-                </MenuItem>
-              ))}
-            </Select>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex flex-col gap-6 mt-10 justify-center items-center w-full"
-            >
-              <label htmlFor="fileUpload">Lade hier das Bild hoch</label>
-              <input onChange={handleFileInput} type="file" required />
-              <button
-                className="mt-20 bg-blue-800 text-white w-[30%] py-2 rounded-sm hover:bg-blue-700 duration-300"
-                onClick={() => {
-                  uploadFile();
-                  setSelectedLabel("");
-                }}
-              >
-                Submit
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
       {showMember && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
           <div className="relative w-1/2 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 gap-4 max-md:w-[90%]">

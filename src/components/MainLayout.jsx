@@ -39,7 +39,6 @@ function MainLayout() {
     });
     const responseJSON = await response.json();
     setUserDetails(responseJSON.user);
-    console.log(responseJSON);
   };
 
   return (
