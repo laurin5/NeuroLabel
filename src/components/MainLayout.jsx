@@ -20,15 +20,12 @@ function MainLayout() {
 
   async function deleteSession() {
     const id = localStorage.getItem("sessionid");
-    const response = await fetch(
-      `http://lizard-studios.at:10187/sessions/${id}`,
-      {
-        headers: {
-          SessionID: id,
-        },
-        method: "DELETE",
-      }
-    );
+    const response = await fetch(`${API_HOST}/sessions/${id}`, {
+      headers: {
+        SessionID: id,
+      },
+      method: "DELETE",
+    });
   }
 
   const loadUserDetails = async () => {

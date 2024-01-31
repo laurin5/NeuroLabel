@@ -12,7 +12,7 @@ function InvitePage() {
 
   async function cancelInvites(InviteId) {
     let response = await fetch(
-      `http://lizard-studios.at:10187/projects/invites/${InviteId}/cancel`,
+      `${API_HOST}/projects/invites/${InviteId}/cancel`,
       {
         method: "DELETE",
         headers: {
@@ -25,28 +25,22 @@ function InvitePage() {
   }
 
   async function getPendingInvites() {
-    let response = await fetch(
-      "http://lizard-studios.at:10187/projects/invites/sent",
-      {
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-        },
-      }
-    );
+    let response = await fetch(`${API_HOST}/projects/invites/sent`, {
+      headers: {
+        SessionID: localStorage.getItem("sessionid"),
+      },
+    });
 
     let responseJSON = await response.json();
     setPendingInvites(responseJSON.invites);
   }
 
   async function loadInvites() {
-    let response = await fetch(
-      "http://lizard-studios.at:10187/projects/invites",
-      {
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-        },
-      }
-    );
+    let response = await fetch(`${API_HOST}/projects/invites`, {
+      headers: {
+        SessionID: localStorage.getItem("sessionid"),
+      },
+    });
 
     let responseJSON = await response.json();
     console.log(responseJSON);
@@ -55,7 +49,7 @@ function InvitePage() {
 
   async function declineInvites(InviteId) {
     const response = await fetch(
-      `http://lizard-studios.at:10187/projects/invites/${InviteId}/decline`,
+      `${API_HOST}/projects/invites/${InviteId}/decline`,
       {
         method: "POST",
         headers: {
@@ -70,7 +64,7 @@ function InvitePage() {
 
   async function acceptInvites(InviteId, projectId) {
     const response = await fetch(
-      `http://lizard-studios.at:10187/projects/invites/${InviteId}/accept`,
+      `${API_HOST}/projects/invites/${InviteId}/accept`,
       {
         method: "POST",
         headers: {
@@ -101,9 +95,9 @@ function InvitePage() {
   }, []);
 
   return (
-    <div className="w-full h-screen flex max-md:pt-0 pt-10 flex-col gap-2 bg-gray-200 items-center">
+    <div className="w-full h-full flex max-md:pt-0 pt-10 flex-col gap-2 items-center">
       {userDetails.is_instructor && (
-        <p className="text-xl w-full text-left pl-[10%]">
+        <p className="text-xl w-full text-left pl-[10%] text-white font-semibold">
           Gesendete Einladungen
         </p>
       )}
@@ -125,7 +119,7 @@ function InvitePage() {
         </div>
       ))}
       <p
-        className={`text-xl w-full text-left pl-[10%] ${
+        className={`text-xl w-full text-left pl-[10%] text-white font-semibold ${
           userDetails.is_participant && !userDetails.is_instructor
             ? ""
             : "mt-[5%]"

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-
+import { API_HOST } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
@@ -17,7 +17,7 @@ function LoginPage() {
     event.preventDefault();
     console.log(emailInput.current.value);
     console.log(passwordInput.current.value);
-    const response = await fetch("http://lizard-studios.at:10187/auth/login", {
+    const response = await fetch(`${API_HOST}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +39,9 @@ function LoginPage() {
   return (
     <div className="w-full h-screen flex flex-col items-center px-4">
       <div className="rounded-md max-md:w-full xl:border-[1px] xl:shadow-md xl:w-1/4 flex py-8 px-8 h-auto mt-10 bg-white flex-col justify-center">
-        <h1 className="font-medium text-2xl mt-3 text-center">Willkommen bei Neuro Label</h1>
+        <h1 className="font-medium text-2xl mt-3 text-center">
+          Willkommen bei Neuro Label
+        </h1>
         <form name="lastName" onSubmit={login}>
           <div className="mt-4">
             <label
@@ -69,11 +71,18 @@ function LoginPage() {
               placeholder="your password"
             />
           </div>
-          <button className="duration-300 hover:bg-blue-800 bg-blue-900 text-xl text-white w-full mt-6 py-2 rounded-sm font-semibold" type="submit">Sign In</button>
+          <button
+            className="duration-300 hover:bg-blue-800 bg-blue-900 text-xl text-white w-full mt-6 py-2 rounded-sm font-semibold"
+            type="submit"
+          >
+            Sign In
+          </button>
         </form>
         <div className="flex flex-col items-center mt-4 justify-center">
           <a className="text-blue-700 mb-2">Forgot password?</a>
-          <a href="/register" className="text-blue-700">Registrierung</a>
+          <a href="/register" className="text-blue-700">
+            Registrierung
+          </a>
           <a className="text-blue-700 mt-2">Privacy/Impressum</a>
         </div>
       </div>

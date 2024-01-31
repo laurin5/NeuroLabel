@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { API_HOST } from "../../utils/api";
 
 function Dashboard() {
   const [projects, setProjects] = useState([]);
@@ -10,7 +11,7 @@ function Dashboard() {
   const [projectSettings, setProjectSettings] = useState(false);
 
   async function loadProjects() {
-    let response = await fetch("http://lizard-studios.at:10187/projects", {
+    let response = await fetch(`${API_HOST}/projects`, {
       headers: {
         SessionID: localStorage.getItem("sessionid"),
       },
@@ -22,7 +23,7 @@ function Dashboard() {
   }
 
   const loadUserDetails = async () => {
-    let response = await fetch("http://lizard-studios.at:10187/users/details", {
+    let response = await fetch(`${API_HOST}/users/details`, {
       headers: {
         SessionID: localStorage.getItem("sessionid"),
       },
@@ -44,15 +45,12 @@ function Dashboard() {
   };
 
   async function deleteProjects(projectID) {
-    let response = await fetch(
-      `http://lizard-studios.at:10187/projects/${projectID}`,
-      {
-        method: "DELETE",
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-        },
-      }
-    );
+    let response = await fetch(`${API_HOST}/projects/${projectID}`, {
+      method: "DELETE",
+      headers: {
+        SessionID: localStorage.getItem("sessionid"),
+      },
+    });
     const responseJSON = await response.json();
     console.log(responseJSON);
     loadProjects();
@@ -60,16 +58,16 @@ function Dashboard() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center bg-gray-200 pb-10">
-      <h1 className="text-center text-xl py-1 tracking-wide mt-[1%] font-semibold">
+    <div className="w-full h-full flex flex-col items-center pb-10">
+      <h1 className="text-white text-center text-2xl py-1 tracking-wide mt-[1%] font-semibold">
         Überblick
       </h1>
-      <h1 className="w-full text-left pl-[10%] text-lg py-[2%]">
+      <h1 className="w-full text-left pl-[4%] text-lg py-[2%] text-white italic font-semibold">
         Willkommen {userDetails.first_name}!
       </h1>
       {projects.length < 1 && !userDetails.is_admin && (
-        <div className="w-full h-screen items-center justify-center flex">
-          <p className="max-md:text-lg italic text-2xl">
+        <div className="w-full h-full items-center justify-center flex">
+          <p className="max-md:text-lg italic text-2xl text-white">
             Sie sind derzeit in keinem Projekt!
           </p>
         </div>
@@ -77,13 +75,15 @@ function Dashboard() {
       <div
         className={`${
           projects.length >= 1
-            ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] hover:shadow-md"
-            : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%] bg-white"
+            ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] rounded-md shadow-md"
+            : `gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%] ${
+                userDetails.is_admin ? "bg-white" : ""
+              } rounded-md`
         } `}
       >
         {projects.map((project, index) => (
           <div
-            className="hover:shadow-md relative border-2 w-full border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8"
+            className="hover:shadow-lg shadow-md relative border-2 w-full border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8"
             key={project.id}
           >
             <Link
@@ -94,7 +94,7 @@ function Dashboard() {
             >
               <div className="w-full flex items-center flex-col">
                 <img
-                  src={`http://lizard-studios.at:10187/${project.image_url}`}
+                  src={`${API_HOST}/${project.image_url}`}
                   className="h-[150px] w-full object-cover"
                   alt=""
                 />
@@ -120,9 +120,11 @@ function Dashboard() {
             {projectSettings && selectedProjectIndex === index && (
               <div
                 onClick={() => deleteProjects(project.id)}
-                className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] py-2 z-10"
+                className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] z-10 items-start flex flex-col"
               >
-                <button className="">Projekt löschen</button>
+                <button className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]">
+                  Projekt löschen
+                </button>
               </div>
             )}
           </div>
@@ -130,7 +132,7 @@ function Dashboard() {
         <div>
           {userDetails.is_admin && (
             <Link to="/create">
-              <button className="h-[238px] border-2 border-gray-200 w-full text-white">
+              <button className="h-[238px] border-2 border-gray-200 w-full text-white shadow-md hover:shadow-lg">
                 <AddIcon color="primary" />
               </button>
             </Link>

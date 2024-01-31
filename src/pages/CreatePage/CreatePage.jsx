@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_HOST } from "../../utils/api";
 
 function CreatePage() {
   const projectnameInput = useRef(null);
@@ -13,7 +14,7 @@ function CreatePage() {
     const formData = new FormData();
     formData.append("image", uploadFile);
 
-    const response2 = await fetch("http://lizard-studios.at:10187/files", {
+    const response2 = await fetch(`${API_HOST}/files`, {
       method: "POST",
       headers: {
         sessionid: localStorage.getItem("sessionid"),
@@ -24,7 +25,7 @@ function CreatePage() {
     const responseJSON2 = await response2.json();
     console.log(responseJSON2.filename);
 
-    const response = await fetch("http://lizard-studios.at:10187/projects", {
+    const response = await fetch(`${API_HOST}/projects`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -61,13 +62,13 @@ function CreatePage() {
   };
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center bg-gray-200 overflow-y-scroll">
+    <div className="w-full h-full flex flex-col items-center justify-center overflow-y-scroll">
       <form
-        className="w-[40%] max-lg:w-[80%] max-lg:h-screen max-md:my-auto h-auto bg-white px-[2%] py-[2%] max-md:py-[5%] shadow-xl"
+        className="w-[35%] max-lg:w-[80%] max-lg:h-screen max-md:my-auto h-auto bg-white px-[2%] mt-2 py-[2%] max-md:py-[5%] shadow-xl"
         onSubmit={(e) => e.preventDefault()}
       >
         <div className="flex flex-col">
-          <h1 className="text-2xl text-center font-medium mb-[6%]">
+          <h1 className="text-xl text-center font-medium mb-[6%]">
             Neues Projekt erstellen
           </h1>
           <label
@@ -120,7 +121,7 @@ function CreatePage() {
             </p>
           </div>
         ) : (
-          <div className="relative w-[100%] h-[200px] border-2 border-gray-2 rounded-md 00 mb-[6%] items-center flex justify-center">
+          <div className="relative w-[100%] h-[150px] border-2 border-gray-2 rounded-md 00 mb-[6%] items-center flex justify-center">
             <input
               name="fileInput"
               type="file"

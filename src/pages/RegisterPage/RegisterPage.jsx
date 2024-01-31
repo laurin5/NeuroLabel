@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useRef, useEffect } from "react";
+import { API_HOST } from "../../utils/api";
 
 function RegisterPage() {
   useEffect(() => {
@@ -16,21 +17,18 @@ function RegisterPage() {
 
   async function register(event) {
     event.preventDefault();
-    const response = await fetch(
-      "http://lizard-studios.at:10187/auth/register",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          first_name: firstnameInput.current.value,
-          last_name: lastnameInput.current.value,
-          password: passwordInput.current.value,
-          email: emailInput.current.value,
-        }),
-      }
-    );
+    const response = await fetch(`${API_HOST}/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        first_name: firstnameInput.current.value,
+        last_name: lastnameInput.current.value,
+        password: passwordInput.current.value,
+        email: emailInput.current.value,
+      }),
+    });
     const responseJSON = await response.json();
     console.log(responseJSON);
 
@@ -98,11 +96,22 @@ function RegisterPage() {
               placeholder="your password"
             />
           </div>
-          <button className="duration-300 hover:bg-blue-800 bg-blue-900 text-xl text-white w-full mt-4 py-2 rounded-sm font-semibold" type="submit">Sign up</button>
+          <button
+            className="duration-300 hover:bg-blue-800 bg-blue-900 text-xl text-white w-full mt-4 py-2 rounded-sm font-semibold"
+            type="submit"
+          >
+            Sign up
+          </button>
         </form>
         <div className="flex items-center mt-4 justify-center">
           <p>
-            Already have an Account? <a className="hover:border-b border-blue-500 text-blue-500" href="/login">Login</a>
+            Already have an Account?{" "}
+            <a
+              className="hover:border-b border-blue-500 text-blue-500"
+              href="/login"
+            >
+              Login
+            </a>
           </p>
         </div>
       </div>

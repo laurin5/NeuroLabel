@@ -49,7 +49,7 @@ const ProfilePage = () => {
     const formData = new FormData();
     formData.append("image", uploadFile);
 
-    const response = await fetch("http://lizard-studios.at:10187/files", {
+    const response = await fetch(`${API_HOST}/files`, {
       method: "POST",
       headers: {
         sessionid: localStorage.getItem("sessionid"),
@@ -60,7 +60,7 @@ const ProfilePage = () => {
     const responseJSON = await response.json();
     console.log(responseJSON.filename);
 
-    const response2 = await fetch("http://lizard-studios.at:10187/users", {
+    const response2 = await fetch(`${API_HOST}/users`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

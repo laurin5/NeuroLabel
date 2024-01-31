@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
+import { API_HOST } from "../../utils/api";
 
 function SessionsPage() {
   const [sessions, setSessions] = useState([]);
@@ -14,7 +15,7 @@ function SessionsPage() {
   };
 
   async function deleteSpecificSession(id) {
-    await fetch(`http://lizard-studios.at:10187/sessions/${id}`, {
+    await fetch(`${API_HOST}/sessions/${id}`, {
       method: "DELETE",
       headers: {
         SessionID: localStorage.getItem("sessionid"),
@@ -29,7 +30,7 @@ function SessionsPage() {
   }
 
   async function deleteAllSessions() {
-    const response = await fetch("http://lizard-studios.at:10187/sessions", {
+    const response = await fetch(`${API_HOST}/sessions`, {
       headers: {
         SessionID: localStorage.getItem("sessionid"),
       },
@@ -69,7 +70,7 @@ function SessionsPage() {
   };
 
   async function GetSessions() {
-    const response = await fetch("http://lizard-studios.at:10187/sessions", {
+    const response = await fetch(`${API_HOST}/sessions`, {
       headers: {
         SessionID: localStorage.getItem("sessionid"),
       },
@@ -87,23 +88,29 @@ function SessionsPage() {
   return (
     <div className="w-full h-screen">
       <div className="w-full h-screen flex flex-col items-center justify-top mt-[2%] gap-3">
-        <p>Your Sessions:</p>
-        <Button variant="contained" onClick={deleteAllSessions}>
+        <p className="text-xl text-white font-semibold">Your Sessions</p>
+        <button
+          className="bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg hover:bg-gray-50 duration-300"
+          onClick={deleteAllSessions}
+        >
           Delete all
-        </Button>
+        </button>
         {sessions.map((session) => (
           <div
             className="w-full h-auto flex flex-col border-2 rounded-md items-center justify-center"
             key={session.id}
           >
             {localStorage.getItem("sessionid") === session.id && (
-              <p>Current Session</p>
+              <p className="text-white">Current Session</p>
             )}
             <div className="flex items-center">
-              <p className="text-sm">ID: {session.id}</p>
-              <Button onClick={() => deleteSpecificSession(session.id)}>
+              <p className="text-sm text-white">ID: {session.id}</p>
+              <button
+                className="text-white ml-10 text-lg"
+                onClick={() => deleteSpecificSession(session.id)}
+              >
                 Delete
-              </Button>
+              </button>
             </div>
             <Button
               onClick={() =>

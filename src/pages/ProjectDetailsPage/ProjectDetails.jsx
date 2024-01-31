@@ -1,6 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import { useParams, Link } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API_HOST } from "../../utils/api";
@@ -32,34 +30,28 @@ function ProjectDetails() {
   const [selectedMemberId, setSelectedMemberId] = useState(null);
 
   let datasetName = useRef(null);
-  let descriptionInput = useRef(null);
-  let labelNameInput = useRef(null);
 
-  let navigate = useNavigate();
   const params = useParams();
   let location = useLocation();
 
   async function kickUser(emailInput) {
-    let response = await fetch(
-      `http://lizard-studios.at:10187/projects/${params.id}/kick`,
-      {
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-          "Content-Type": "application/json",
-        },
-        method: "DELETE",
-        body: JSON.stringify({
-          email: emailInput,
-        }),
-      }
-    );
+    let response = await fetch(`${API_HOST}/projects/${params.id}/kick`, {
+      headers: {
+        SessionID: localStorage.getItem("sessionid"),
+        "Content-Type": "application/json",
+      },
+      method: "DELETE",
+      body: JSON.stringify({
+        email: emailInput,
+      }),
+    });
     let responseJSON = await response.json();
     loadProjectDetails();
   }
 
   async function promoteUser(emailInput) {
     let response = await fetch(
-      `http://lizard-studios.at:10187/projects/${params.id}/admins/toggle`,
+      `${API_HOST}/projects/${params.id}/admins/toggle`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -77,14 +69,11 @@ function ProjectDetails() {
   }
 
   async function loadProjectDetails() {
-    let response = await fetch(
-      `http://lizard-studios.at:10187/projects/${params.id}/details`,
-      {
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-        },
-      }
-    );
+    let response = await fetch(`${API_HOST}/projects/${params.id}/details`, {
+      headers: {
+        SessionID: localStorage.getItem("sessionid"),
+      },
+    });
 
     let responseJSON = await response.json();
     setDetails(responseJSON);
@@ -110,52 +99,24 @@ function ProjectDetails() {
     setDatasetSettings(!datasetSettings);
   };
 
-  const handleLabelClick = (labelId) => {
-    setSelectedLabelId(labelId);
-  };
-
-  const handleFileInput = (event) => {
-    setFile(event.target.files[0]);
-  };
-
   const createNewDataset = async () => {
-    const response = await fetch(
-      `http://lizard-studios.at:10187/projects/${params.id}/datasets`,
-      {
-        method: "POST",
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: datasetName.current.value,
-          upload_type: "image",
-        }),
-      }
-    );
+    const response = await fetch(`${API_HOST}/projects/${params.id}/datasets`, {
+      method: "POST",
+      headers: {
+        SessionID: localStorage.getItem("sessionid"),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: datasetName.current.value,
+        upload_type: "image",
+      }),
+    });
     loadProjectDetails();
-  };
-
-  const createNewTask = async () => {
-    const response = await fetch(
-      `http://lizard-studios.at:10187/projects/datasets/${selectedDatasetId}/tasks`,
-      {
-        method: "POST",
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          task: descriptionInput.current.value,
-        }),
-      }
-    );
-    const responseJSON = await response.json();
   };
 
   const fetchTasks = async () => {
     const response = await fetch(
-      `http://lizard-studios.at:10187/projects/datasets/${selectedDatasetId}/tasks`,
+      `${API_HOST}/projects/datasets/${selectedDatasetId}/tasks`,
       {
         headers: {
           SessionID: localStorage.getItem("sessionid"),
@@ -166,74 +127,21 @@ function ProjectDetails() {
     setTasks(responseJSON.tasks);
   };
 
-  const uploadFile = async () => {
-    const formData = new FormData();
-    formData.append("image", file);
-
-    const response1 = await fetch("http://lizard-studios.at:10187/files", {
-      method: "POST",
+  async function deleteDataset(datasetId) {
+    let response = await fetch(`${API_HOST}/projects/datasets/${datasetId}`, {
+      method: "DELETE",
       headers: {
         SessionID: localStorage.getItem("sessionid"),
       },
-      body: formData,
     });
-    const responseJSON1 = await response1.json();
-
-    const response2 = await fetch(
-      `${API_HOST}/projects/datasets/${selectedDatasetId}/entries`,
-      {
-        method: "POST",
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          image_url: responseJSON1.filename,
-          label_uuid: selectedLabelId,
-        }),
-      }
-    );
-    const responseJSON2 = await response2.json();
-    setThanks(true);
-    setIndex(0);
-  };
-
-  async function deleteDataset(datasetId) {
-    let response = await fetch(
-      `http://lizard-studios.at:10187/projects/datasets/${datasetId}`,
-      {
-        method: "DELETE",
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-        },
-      }
-    );
     const responseJSON = await response.json();
     loadProjectDetails();
     setDatasetSettings(!datasetSettings);
   }
 
-  const createNewLabel = async () => {
-    const response = await fetch(
-      `http://lizard-studios.at:10187/projects/datasets/${selectedDatasetId}/labels`,
-      {
-        method: "POST",
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          label: labelNameInput.current.value,
-        }),
-      }
-    );
-    const responseJSON = await response.json();
-    setSelectedLabelId(responseJSON.id);
-  };
-
   const fetchLabels = async () => {
     const response = await fetch(
-      `http://lizard-studios.at:10187/projects/datasets/${selectedDatasetId}/labels`,
+      `${API_HOST}/projects/datasets/${selectedDatasetId}/labels`,
       {
         headers: {
           SessionID: localStorage.getItem("sessionid"),
@@ -244,26 +152,21 @@ function ProjectDetails() {
     setLabels(responseJSON.labels);
   };
 
-  const reload = () => {
-    fetchTasks();
-    fetchLabels();
-  };
-
   return (
-    <div className="w-full h-screen flex items-center pt-[2%] flex-col gap-4 bg-gray-200">
+    <div className="w-full h-full flex items-center pt-[2%] flex-col gap-4">
       {details.project && (
-        <div className="flex flex-row w-full items-center justify-between px-[5%]">
-          <div className="flex flex-col">
-            <p className="text-xl w-full text-left ml-[8%]">
+        <div className="flex flex-row w-full items-center justify-between pl-[3%]">
+          <div className="flex flex-col w-full">
+            <p className="text-xl w-full text-left text-white font-medium">
               {details.project.name}
             </p>
-            <p className="text-left ml-[8%] text-md italic w-full w-[80%]">
+            <p className="text-left text-md italic w-[80%] text-white">
               {details.project.description}
             </p>
           </div>
           {location.state.isAdmin && (
             <SettingsIcon
-              className="cursor-pointer"
+              className="cursor-pointer text-white absolute xl:right-9 max-lg:right-4"
               onClick={() => {
                 setSettingsVisibility(!settingsVisibility);
               }}
@@ -272,22 +175,22 @@ function ProjectDetails() {
         </div>
       )}
       {location.state.isAdmin && settingsVisibility && (
-        <div className="flex flex-col bg-white absolute top-[16%] max-xl:top-[8%] right-[5%] w-[180px] h-fit shadow-xl rounded-md z-10">
-          <div className="w-full items-center my-[6%] flex flex-col">
+        <div className="flex flex-col bg-white absolute top-[20%] max-xl:top-[8%] right-[2%] w-[180px] h-fit shadow-xl rounded-md z-10">
+          <div className="rounded-sm cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-full z-10 items-start flex flex-col">
             <Link
               onClick={() => {
                 localStorage.setItem("projectID", details.project.id);
               }}
               state={{ isAdmin: location.state.isAdmin }}
               to={"/invite/send"}
-              className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-[16px] py-[2px]"
+              className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
             >
               Personen einladen
             </Link>
             <button
               onClick={showMemberOnClick}
               variant="contained"
-              className="text-gray-700 text-md hover:bg-gray-50 duration-300 w-full pl-4 py-[2px] pr-[28px]"
+              className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
             >
               Mitglieder ansehen
             </button>
@@ -304,18 +207,20 @@ function ProjectDetails() {
       {dataset && dataset.length >= 1 && !location.state.isAdmin && (
         <p className="text-xl">Datensätze</p>
       )}
-      {location.state.isAdmin && <p className="text-xl">Datensätze</p>}
+      {location.state.isAdmin && (
+        <p className="text-3xl font-medium text-white">Datensätze</p>
+      )}
       <div
         className={`${
           dataset && dataset.length >= 1
-            ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] hover:shadow-md"
+            ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] shadow-md rounded-md"
             : `gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2 xl:grid-cols-4 w-[92%] ${
                 location.state.isAdmin ? "bg-white" : ""
               }`
         } `}
       >
         {dataset.map((data, index) => (
-          <div className="w-full bg-gradient-to-br from-gray-100 to-gray-50 hover:shadow-md relative border-2 h-[150px] border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8">
+          <div className="w-full bg-white shadow-md hover:shadow-lg relative border-2 h-[150px] border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8">
             <Link
               to="/upload"
               state={{ datasetId: data.id }}
@@ -339,23 +244,23 @@ function ProjectDetails() {
                 <div className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] z-10 items-start flex flex-col">
                   <button
                     onClick={() => deleteDataset(data.id)}
-                    className="hover:bg-gray-50 w-full text-left pl-2 py-[3%]"
+                    className="hover:bg-gray-100 w-full text-left pl-2 py-[3%]"
                   >
                     Datensatz löschen
                   </button>
                   <Link
                     to={`/projects/datasets/${data.id}`}
                     state={{ dataId: data.id }}
-                    className="hover:bg-gray-50 w-full text-left pl-2 py-[3%]"
+                    className="hover:bg-gray-100 w-full text-left pl-2 py-[3%]"
                   >
                     Datensatz bearbeiten
                   </Link>
                   <Link
                     state={{ id: data.id }}
-                    className="hover:bg-gray-50 w-full text-left pl-2 py-[3%]"
+                    className="hover:bg-gray-100 w-full text-left pl-2 py-[3%]"
                     to={`/projects/datasets/${data.id}/entries`}
                   >
-                    Schau die Entries dieses Datasets an
+                    Datemsatz Einträge
                   </Link>
                 </div>
               )}
@@ -367,7 +272,7 @@ function ProjectDetails() {
               onClick={() => {
                 setToggleDatasetVisibility(true);
               }}
-              className="h-[150px] border-2 w-full text-white border-gray-200"
+              className="h-[150px] border-2 w-full text-white border-gray-200 shadow-md hover:shadow-lg"
             >
               <AddIcon color="primary" />
             </button>

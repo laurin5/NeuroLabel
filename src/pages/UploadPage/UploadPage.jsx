@@ -112,7 +112,7 @@ const UploadPage = () => {
     <div className="w-full h-full flex flex-col items-center">
       {currentTaskIndex < tasks.length && (
         <form
-          className="flex flex-col w-[40%] items-center bg-white shadow-md mt-[5%] px-10 py-10 gap-3"
+          className="flex flex-col w-[30%] rounded-md max-md:w-4/5 items-center bg-white shadow-md mt-[5%] px-10 py-10 gap-3"
           onSubmit={handleSubmit}
         >
           <h2 className="text-xl">Aufgabe {currentTaskIndex + 1}</h2>
@@ -146,14 +146,14 @@ const UploadPage = () => {
             </Select>
           )}
           <label
-            className="mt-[6%] mb-[2%] block text-gray-800 text-lg font-normal tracking-tighter"
+            className="mt-[6%] mb-[2%] block text-gray-800 font-normal tracking-tighter text-md"
             htmlFor="fileInput"
           >
             Lade ein Bild hoch
           </label>
           <input
             name="fileInput"
-            className="block w-[80%] text-sm text-slate-500
+            className="w-[50%] max-md:w-[95%] text-sm text-slate-500
         file:mr-4 file:py-2 file:px-4 file:rounded-md
         file:border-0 file:text-sm file:font-semibold
         file:bg-blue-50 file:text-blue-700
@@ -172,8 +172,15 @@ const UploadPage = () => {
           </button>
         </form>
       )}
-      {currentTaskIndex >= tasks.length && (
-        <div>Alle Aufgaben abgeschlossen</div>
+      {currentTaskIndex >= tasks.length && tasks.length >= 1 && (
+        <div className="text-2xl w-full flex flex-col items-center justify-center mt-[15%] text-white italic">
+          <p>Alle Aufgaben abgeschlossen!</p>
+        </div>
+      )}
+      {tasks.length < 1 && (
+        <div className="text-2xl w-full flex flex-col items-center justify-center mt-[15%] text-white italic">
+          <p>Es sind keine Aufgaben in diesem Datensatz vorhanden!</p>
+        </div>
       )}
     </div>
   );
