@@ -40,13 +40,18 @@ const EntryPage = () => {
   return (
     <div>
       <p className="text-center text-xl text-white mt-2">Entries</p>
+      {images.length < 1 && (
+        <p className="text-center text-xl text-white">
+          Keine Entries vorhanden
+        </p>
+      )}
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="grid grid-cols-10 gap-6 mx-6">
+        <div className="grid grid-cols-10 gap-6 mx-6 lg:grid-cols-8 max-md:grid-cols-5">
           {images.map((image) => (
             <div
-              className="rounded-md shadow-md flex flex-col items-center bg-white hover:shadow-xl"
+              className="shadow-md flex flex-col items-center bg-white hover:shadow-xl"
               key={image.id}
             >
               <img

@@ -154,10 +154,10 @@ const UploadPage = () => {
           <input
             name="fileInput"
             className="w-[50%] max-md:w-[95%] text-sm text-slate-500
-        file:mr-4 file:py-2 file:px-4 file:rounded-md
-        file:border-0 file:text-sm file:font-semibold
-        file:bg-blue-50 file:text-blue-700
-        hover:file:bg-blue-100"
+                      file:mr-4 file:py-2 file:px-4 file:rounded-md
+                      file:border-0 file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-blue-700
+                    hover:file:bg-blue-100"
             type="file"
             onChange={handleFileChange}
             placeholder="Hier Bild hochladen"
@@ -173,8 +173,11 @@ const UploadPage = () => {
         </form>
       )}
       {currentTaskIndex >= tasks.length && tasks.length >= 1 && (
-        <div className="text-2xl w-full flex flex-col items-center justify-center mt-[15%] text-white italic">
+        <div className="text-xl w-full flex flex-col items-center justify-center mt-[15%] text-white italic">
           <p>Alle Aufgaben abgeschlossen!</p>
+          <button onClick={() => setCurrentTaskIndex(0)}>
+            Nochmal hochladen
+          </button>
         </div>
       )}
       {tasks.length < 1 && (

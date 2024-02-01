@@ -85,19 +85,19 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="w-full h-screen bg-gray-200 flex flex-col items-center">
-      <h1 className="mt-6 text-2xl font-semibold">Profil</h1>
+    <div className="w-full h-screen flex flex-col items-center">
+      <h1 className="mt-6 text-2xl font-semibold text-white">Profil</h1>
       <div className="flex items-center gap-2 mb-[4%] w-[90%]">
         <img
           className="h-[80px] w-[80px] object-cover rounded-full shadow-sm"
           src={`${API_HOST}/${userDetails.profile_picture_url}`}
           alt=""
         />
-        <p className="text-lg font-semibold">
+        <p className="text-lg font-semibold text-white">
           {userDetails.last_name} {userDetails.first_name}
         </p>
       </div>
-      <div className="w-[75%] bg-white flex flex-col p-6 rounded-sm hover:shadow-md">
+      <div className="w-[75%] bg-white flex flex-col p-6 rounded-md shadow-md hover:shadow-lg">
         <div className="flex justify-between mb-[2%]">
           <label htmlFor="userLastName">Nachname</label>
           <input

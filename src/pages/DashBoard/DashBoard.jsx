@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -9,6 +9,14 @@ function Dashboard() {
   const [userDetails, setUserDetails] = useState({});
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(null);
   const [projectSettings, setProjectSettings] = useState(false);
+  const [changeProjectSettings, setChangeProjectSettings] = useState(false);
+  const [file, setFile] = useState(null);
+  const [uploadFile, setUploadFile] = useState(null);
+  const [fileName, setFileName] = useState("");
+
+  let projectNameInput = useRef(null);
+  let projectDescriptionInput = useRef(null);
+  let projectImageInput = useRef(null);
 
   async function loadProjects() {
     let response = await fetch(`${API_HOST}/projects`, {
@@ -57,10 +65,61 @@ function Dashboard() {
     setProjectSettings(!projectSettings);
   }
 
+  async function changeProject() {
+    const formData = new FormData();
+    formData.append("image", uploadFile);
+
+    const response = await fetch(`${API_HOST}/files`, {
+      method: "POST",
+      headers: {
+        sessionid: localStorage.getItem("sessionid"),
+      },
+      body: formData,
+    });
+
+    const responseJSON = await response.json();
+    console.log(responseJSON.filename);
+
+    const response2 = await fetch(
+      `${API_HOST}/projects/${projects[selectedProjectIndex].id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          SessionID: localStorage.getItem("sessionid"),
+        },
+        body: JSON.stringify({
+          project_name: projectNameInput.current.value,
+          project_description: projectDescriptionInput.current.value,
+          image_url: responseJSON.filename,
+        }),
+      }
+    );
+    loadProjects();
+    setProjectSettings(false);
+    setChangeProjectSettings(false);
+  }
+
+  const handleFileInput = (event) => {
+    const file = event.target.files[0];
+    setUploadFile(event.target.files[0]);
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setFile(reader.result);
+      };
+
+      reader.readAsDataURL(file);
+      setFileName(file.name);
+    }
+  };
+
   return (
     <div className="w-full h-full flex flex-col items-center pb-10">
       <h1 className="text-white text-center text-2xl py-1 tracking-wide mt-[1%] font-semibold">
-        Überblick
+        Projektübersicht
       </h1>
       <h1 className="w-full text-left pl-[4%] text-lg py-[2%] text-white italic font-semibold">
         Willkommen {userDetails.first_name}!
@@ -118,17 +177,112 @@ function Dashboard() {
               </button>
             )}
             {projectSettings && selectedProjectIndex === index && (
-              <div
-                onClick={() => deleteProjects(project.id)}
-                className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] z-10 items-start flex flex-col"
-              >
-                <button className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]">
+              <div className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] z-10 items-start flex flex-col">
+                <button
+                  onClick={() => deleteProjects(project.id)}
+                  className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
+                >
                   Projekt löschen
+                </button>
+                <button
+                  onClick={() =>
+                    setChangeProjectSettings(!changeProjectSettings)
+                  }
+                  className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
+                >
+                  Projekt umbenennen
                 </button>
               </div>
             )}
           </div>
         ))}
+        {changeProjectSettings && (
+          <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
+            <div className="max-md:w-[90%] w-2/4 h-3/4 bg-white rounded-md flex items-center flex-col pt-8 justify-center gap-8 relative">
+              <p
+                onClick={() => {
+                  setChangeProjectSettings(false);
+                  setProjectSettings(false);
+                }}
+                className="absolute top-3 right-5 text-lg cursor-pointer"
+              >
+                &times;
+              </p>
+              <form
+                className="w-full flex flex-col items-center"
+                onSubmit={(e) => e.preventDefault()}
+              >
+                <div className="w-[75%] bg-white flex flex-col p-6 rounded-md">
+                  <div className="flex justify-between mb-[2%]">
+                    <label htmlFor="projectName">Projekt Name</label>
+                    <input
+                      className="border shadow appearance-none rounded text-md text-gray-700 leading-tight focus:outline-none pl-2 py-2"
+                      ref={projectNameInput}
+                      type="text"
+                      name="userLastName"
+                      placeholder={projects[selectedProjectIndex].name}
+                    />
+                  </div>
+                  <div className="flex justify-between">
+                    <label htmlFor="projectDescription">
+                      Projekt Beschreibung
+                    </label>
+                    <input
+                      className="border shadow appearance-none rounded text-md text-gray-700 leading-tight focus:outline-none pl-2 py-2"
+                      ref={projectDescriptionInput}
+                      type="text"
+                      name="userFirstName"
+                      placeholder={projects[selectedProjectIndex].description}
+                    />
+                  </div>
+                  <div className="">
+                    <label
+                      className="mt-[6%] mb-[2%] block text-gray-800 text-md font-normal tracking-tighter"
+                      htmlFor="fileInput"
+                    >
+                      Neues Bild hochladen
+                    </label>
+                  </div>
+                  {file ? (
+                    <div className="flex flex-col items-center relative">
+                      <img
+                        className="h-[200px] w-[30%] object-cover mb-[6%]"
+                        src={file}
+                        alt=""
+                      />
+                      <p
+                        onClick={() => setFile(undefined)}
+                        className="absolute top-0 right-[20%] text-lg cursor-pointer"
+                      >
+                        &times;
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="relative w-[100%] h-[200px] border-2 border-gray-2 rounded-md 00 mb-[6%] items-center flex justify-center">
+                      <input
+                        name="fileInput"
+                        type="file"
+                        className="w-full h-full opacity-0 cursor-pointer"
+                        onChange={handleFileInput}
+                      />
+                      <p className="absolute italic text-gray-400">
+                        Bild hier hochladen
+                      </p>
+                    </div>
+                  )}
+                  <div className="w-full items-center flex flex-col">
+                    <button
+                      className="py-2 px-3 bg-blue-600 rounded-md text-white "
+                      onClick={() => changeProject()}
+                    >
+                      Profil aktualisieren
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
         <div>
           {userDetails.is_admin && (
             <Link to="/create">

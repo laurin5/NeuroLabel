@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { API_HOST } from "../../utils/api";
 import SettingsIcon from "@mui/icons-material/Settings";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -8,21 +8,13 @@ import AddIcon from "@mui/icons-material/Add";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 function ProjectDetails() {
-  const [visible, setVisible] = useState(false);
-  const [index, setIndex] = useState(0);
   const [showMember, setShowMember] = useState(false);
   const [details, setDetails] = useState({});
   const [toggleDatasetVisibility, setToggleDatasetVisibility] = useState(false);
   const [dataset, setDataset] = useState([]);
-  const [toggleTaskVisibility, setToggleTaskVisibility] = useState(false);
   const [selectedDatasetId, setSelectedDatasetId] = useState(null);
   const [tasks, setTasks] = useState([]);
-  const [toggleLabelVisibility, setToggleLabelVisibility] = useState(false);
   const [labels, setLabels] = useState([]);
-  const [selectedLabel, setSelectedLabel] = useState("");
-  const [file, setFile] = useState(null);
-  const [selectedLabelId, setSelectedLabelId] = useState("");
-  const [thanks, setThanks] = useState(false);
   const [settingsVisibility, setSettingsVisibility] = useState(false);
   const [selectedDatasetIndex, setSelectedDatasetIndex] = useState(null);
   const [datasetSettings, setDatasetSettings] = useState(false);
@@ -155,7 +147,7 @@ function ProjectDetails() {
   return (
     <div className="w-full h-full flex items-center pt-[2%] flex-col gap-4">
       {details.project && (
-        <div className="flex flex-row w-full items-center justify-between pl-[3%]">
+        <div className="flex flex-row w-full items-center justify-between pl-[3%] relative">
           <div className="flex flex-col w-full">
             <p className="text-xl w-full text-left text-white font-medium">
               {details.project.name}
@@ -166,7 +158,7 @@ function ProjectDetails() {
           </div>
           {location.state.isAdmin && (
             <SettingsIcon
-              className="cursor-pointer text-white absolute xl:right-9 max-lg:right-4"
+              className="cursor-pointer text-white absolute xl:right-9 max-lg:right-4 right-4"
               onClick={() => {
                 setSettingsVisibility(!settingsVisibility);
               }}
@@ -175,7 +167,7 @@ function ProjectDetails() {
         </div>
       )}
       {location.state.isAdmin && settingsVisibility && (
-        <div className="flex flex-col bg-white absolute top-[20%] max-xl:top-[8%] right-[2%] w-[180px] h-fit shadow-xl rounded-md z-10">
+        <div className="flex flex-col bg-white absolute top-[20%] right-[2%] w-[180px] h-fit shadow-xl rounded-md z-10">
           <div className="rounded-sm cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-full z-10 items-start flex flex-col">
             <Link
               onClick={() => {
@@ -205,7 +197,7 @@ function ProjectDetails() {
         </div>
       )}
       {dataset && dataset.length >= 1 && !location.state.isAdmin && (
-        <p className="text-xl">Datensätze</p>
+        <p className="text-xl text-white">Datensätze</p>
       )}
       {location.state.isAdmin && (
         <p className="text-3xl font-medium text-white">Datensätze</p>
@@ -260,7 +252,7 @@ function ProjectDetails() {
                     className="hover:bg-gray-100 w-full text-left pl-2 py-[3%]"
                     to={`/projects/datasets/${data.id}/entries`}
                   >
-                    Datemsatz Einträge
+                    Datensatz Einträge
                   </Link>
                 </div>
               )}
@@ -314,12 +306,12 @@ function ProjectDetails() {
                       />
                       <p>
                         {member.first_name} {member.last_name}{" "}
-                        {member.is_participant && !location.state.isAdmin && (
+                        {!member.is_project_admin && (
                           <span className="absolute right-[12%]">
                             TeilnehmerIn
                           </span>
                         )}
-                        {location.state.isAdmin && (
+                        {member.is_project_admin && (
                           <span className="absolute right-[16%]">LehrerIn</span>
                         )}
                       </p>
@@ -333,10 +325,10 @@ function ProjectDetails() {
                         />
                       )}
                       {memberVisibility && selectedMemberId == index && (
-                        <div className="absolute top-[31%] right-[5%] bg-white p-3 rounded-md shadow-lg z-10">
+                        <div className="cursor-pointer bg-white absolute top-[31%] right-[4%] shadow-xl border-[1px] border-gray-100 w-[30%] z-10 items-start flex flex-col">
                           <p
-                            onClick={() => kickUser(member.email)}
-                            className="text-red-600 cursor-pointer"
+                            onClick={() => kick(member.email)}
+                            className="text-red-600 hover:bg-gray-100 w-full text-left pl-2 py-[3%]"
                           >
                             Teilnehmer kicken
                           </p>
@@ -345,9 +337,11 @@ function ProjectDetails() {
                               promoteUser(member.email);
                               setMemberVisibility(!memberVisibility);
                             }}
-                            className="text-gray-700 cursor-pointer"
+                            className="hover:bg-gray-100 w-full text-left pl-2 py-[3%]"
                           >
-                            Zu Admin machen
+                            {member.is_project_admin
+                              ? "Zu User machen"
+                              : "Zu Admin machen"}
                           </p>
                         </div>
                       )}

@@ -339,7 +339,7 @@ const DatasetDetails = () => {
         <div
           className={`${
             getTasks.length >= 1
-              ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 lg:grid-cols-3 md:grid-cols-2 xl:grid-cols-4 w-full shadow-md rounded-md"
+              ? "bg-white gap-6 p-6 grid grid-cols-2 max-md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full shadow-md rounded-md"
               : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2 xl:grid-cols-4 w-[92%] shadow-md rounded-md"
           } `}
         >
@@ -460,7 +460,7 @@ const DatasetDetails = () => {
           <div
             className={`${
               getLabels.length >= 1
-                ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 lg:grid-cols-3 md:grid-cols-2 xl:grid-cols-4 w-full hover:shadow-md"
+                ? "bg-white gap-6 p-6 grid grid-cols-2 max-md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full shadow-md rounded-md"
                 : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%]"
             } `}
           >

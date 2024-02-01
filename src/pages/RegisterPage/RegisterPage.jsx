@@ -32,7 +32,7 @@ function RegisterPage() {
     const responseJSON = await response.json();
     console.log(responseJSON);
 
-    if (response.status === 200) {
+    if (response.statusCode === 200) {
       navigator("/login");
     }
   }
