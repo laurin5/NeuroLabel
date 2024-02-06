@@ -18,6 +18,22 @@ const ProfilePage = () => {
     loadUserDetails();
   }, []);
 
+  const handleLogOut = () => {
+    deleteSession();
+    localStorage.removeItem("sessionid");
+    navigator("/login");
+  };
+
+  async function deleteSession() {
+    const id = localStorage.getItem("sessionid");
+    const response = await fetch(`${API_HOST}/sessions/${id}`, {
+      headers: {
+        SessionID: id,
+      },
+      method: "DELETE",
+    });
+  }
+
   const loadUserDetails = async () => {
     const response = await fetch(`${API_HOST}/users/details`, {
       headers: {
@@ -87,7 +103,7 @@ const ProfilePage = () => {
   return (
     <div className="w-full h-screen flex flex-col items-center">
       <h1 className="mt-6 text-2xl font-semibold text-white">Profil</h1>
-      <div className="flex items-center gap-2 mb-[4%] w-[90%]">
+      <div className="flex items-center gap-2 mb-[1%] w-[80%]">
         <img
           className="h-[80px] w-[80px] object-cover rounded-full shadow-sm"
           src={`${API_HOST}/${userDetails.profile_picture_url}`}
@@ -97,7 +113,7 @@ const ProfilePage = () => {
           {userDetails.last_name} {userDetails.first_name}
         </p>
       </div>
-      <div className="w-[75%] bg-white flex flex-col p-6 rounded-md shadow-md hover:shadow-lg">
+      <div className="w-[55%] bg-white flex flex-col p-6 rounded-md shadow-md hover:shadow-lg">
         <div className="flex justify-between mb-[2%]">
           <label htmlFor="userLastName">Nachname</label>
           <input
@@ -159,6 +175,12 @@ const ProfilePage = () => {
             Profil aktualisieren
           </button>
         </div>
+        <button
+          className="w-full text-right text-red-600"
+          onClick={handleLogOut}
+        >
+          Ausloggen
+        </button>
       </div>
     </div>
   );

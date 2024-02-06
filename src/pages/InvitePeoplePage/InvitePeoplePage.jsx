@@ -42,7 +42,7 @@ function InvitePeople() {
             className="border shadow appearance-none rounded w-full py-2 px-3 text-sm text-gray-700 leading-tight focus:outline-none"
             type="email"
             name="email"
-            placeholder="enter email"
+            placeholder="Email eingeben"
           />
         </div>
         <div className="w-full flex flex-col items-center gap-4">

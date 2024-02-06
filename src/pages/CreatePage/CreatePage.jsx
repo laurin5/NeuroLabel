@@ -62,9 +62,9 @@ function CreatePage() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center overflow-y-scroll">
+    <div className="w-full h-full flex flex-col items-center justify-center">
       <form
-        className="w-[35%] max-lg:w-[80%] max-lg:h-screen max-md:my-auto h-auto bg-white px-[2%] mt-2 py-[2%] max-md:py-[5%] shadow-xl"
+        className="w-[35%] max-lg:w-[80%] max-lg:h-screen max-md:my-auto h-auto bg-white px-[2%] my-6 py-[2%] max-md:py-[5%] shadow-xl"
         onSubmit={(e) => e.preventDefault()}
       >
         <div className="flex flex-col">
@@ -125,10 +125,12 @@ function CreatePage() {
             <input
               name="fileInput"
               type="file"
-              className="w-full h-full opacity-0 cursor-pointer"
+              className="w-full h-full opacity-0 cursor-pointer z-10"
               onChange={handleFileInput}
             />
-            <p className="absolute italic text-gray-400">Bild hier hochladen</p>
+            <p className="absolute italic text-gray-400 z-0">
+              Bild hier hochladen
+            </p>
           </div>
         )}
         {fileName && (
@@ -139,7 +141,7 @@ function CreatePage() {
           </div>
         )}
         <button
-          className="py-[3%] duration-300 hover:bg-blue-800 bg-blue-900 text-xl text-white w-full rounded-md font-semibold"
+          className="py-[3%] duration-300 hover:bg-blue-500 bg-blue-600 text-xl text-white w-full rounded-md font-semibold"
           type="submit"
           onClick={() => {
             createProject();

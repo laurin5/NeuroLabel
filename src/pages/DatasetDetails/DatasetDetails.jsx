@@ -215,9 +215,15 @@ const DatasetDetails = () => {
 
   return (
     <div className="w-full h-full flex flex-col items-center overflow-auto overflow-x-hidden">
-      <div className="flex w-full items-center">
+      <div className="flex w-full flex-col items-center">
         <p className="text-white text-2xl mt-2 font-semibold w-full text-center">
-          Tasks und Labels
+          Aufgaben und Kategorien
+        </p>
+        <p className="text-white italic text-center w-[80%] my-2">
+          Unten finden Sie eine Übersicht Ihrer erstellten Aufgabe und
+          Kategorien. Sie haben die Option, weitere Aufgaben oder Kategorien
+          hinzuzufügen. Weitere Bearbeitungsoptionen finden Sie in den
+          Menüpunkten mit den drei gestapelten Punkten.
         </p>
         <SettingsIcon
           onClick={() => setDatasetSettings(!datasetSettings)}
@@ -260,14 +266,14 @@ const DatasetDetails = () => {
                 }}
                 className="bg-blue-600 border text-white py-2 max-md:w-[60%] w-[60%] rounded-md"
               >
-                Submit
+                Bestätigen
               </button>
             </div>
           </div>
         )}
       </div>
       <p className="w-full text-xl my-[1%] ml-[2%] text-white font-medium tracking-wide">
-        Tasks
+        Aufgaben
       </p>
       <div className="flex bg-white w-[90%] rounded-md shadow-md">
         {taskVisibility && (
@@ -282,10 +288,10 @@ const DatasetDetails = () => {
                 &times;
               </p>
               <p className="font-semibold text-xl mt-[3%] mb-[5%]">
-                Task erstellen
+                Aufgabe erstellen
               </p>
               <p className="text-center">
-                Geben Sie hier die Beschreibung ihrer Task ein
+                Geben Sie hier die Beschreibung ihrer Aufgabe ein
               </p>
               <input
                 ref={taskDescription}
@@ -300,7 +306,7 @@ const DatasetDetails = () => {
                 }}
                 className="bg-blue-600 border text-white py-2 max-md:w-[60%] w-[60%] rounded-md mt-[12%]"
               >
-                Submit
+                Bestätigen
               </button>
             </div>
           </div>
@@ -331,7 +337,7 @@ const DatasetDetails = () => {
                 }}
                 className="bg-blue-600 border text-white py-2 max-md:w-[60%] w-[60%] rounded-md"
               >
-                Submit
+                Bestätigen
               </button>
             </div>
           </div>
@@ -340,12 +346,12 @@ const DatasetDetails = () => {
           className={`${
             getTasks.length >= 1
               ? "bg-white gap-6 p-6 grid grid-cols-2 max-md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full shadow-md rounded-md"
-              : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2 xl:grid-cols-4 w-[92%] shadow-md rounded-md"
+              : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2 xl:grid-cols-4 w-[92%] rounded-md"
           } `}
         >
           {getTasks.map((task, index) => (
-            <div className="w-full bg-gradient-to-br from-gray-100 to-gray-50 hover:shadow-lg shadow-md relative border-2 h-[150px] border-gray-200 justify-center text-sm flex flex-col items-center gap-1 pb-8">
-              <p>Task:</p>
+            <div className="w-full bg-white hover:shadow-lg shadow-md relative border-2 h-[150px] border-gray-200 justify-center text-sm flex flex-col items-center gap-1 pb-8">
+              <p>Aufgabe:</p>
               <p className="text-md text-center font-mono w-[90%]">
                 {task.task}
               </p>
@@ -360,7 +366,7 @@ const DatasetDetails = () => {
                     onClick={() => deleteTask(task.id)}
                     className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
                   >
-                    Task löschen
+                    Aufgabe löschen
                   </button>
                   <button
                     onClick={() => {
@@ -369,7 +375,7 @@ const DatasetDetails = () => {
                     }}
                     className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
                   >
-                    Task umbennenen
+                    Aufgabe umbennenen
                   </button>
                 </div>
               )}
@@ -386,7 +392,7 @@ const DatasetDetails = () => {
 
       <div className="flex flex-col w-full items-center max-md:mb-[15%] mb-[5%]">
         <p className="w-full text-xl my-[1%] ml-[2%] text-white font-medium tracking-wide">
-          Labels
+          Kategorien
         </p>
         <div className="flex bg-white w-[90%] shadow-md rounded-md">
           {labelVisibility && (
@@ -401,10 +407,10 @@ const DatasetDetails = () => {
                   &times;
                 </p>
                 <p className="font-semibold text-xl mt-[3%] mb-[5%]">
-                  Label erstellen
+                  Kategorie erstellen
                 </p>
                 <p className="text-center">
-                  Geben Sie hier den Namen ihres Labels ein!
+                  Geben Sie hier den Namen Ihrer Kategorie ein!
                 </p>
                 <input
                   ref={labelName}
@@ -419,7 +425,7 @@ const DatasetDetails = () => {
                   }}
                   className="bg-blue-600 border text-white py-2 max-md:w-[60%] w-[60%] rounded-md mt-[12%]"
                 >
-                  Submit
+                  Bestätigen
                 </button>
               </div>
             </div>
@@ -452,7 +458,7 @@ const DatasetDetails = () => {
                   }}
                   className="bg-blue-600 border text-white py-2 max-md:w-[60%] w-[60%] rounded-md"
                 >
-                  Submit
+                  Bestätigen
                 </button>
               </div>
             </div>
@@ -460,15 +466,16 @@ const DatasetDetails = () => {
           <div
             className={`${
               getLabels.length >= 1
-                ? "bg-white gap-6 p-6 grid grid-cols-2 max-md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full shadow-md rounded-md"
+                ? "bg-white gap-6 p-6 grid grid-cols-2 max-md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-8 w-full shadow-md rounded-md"
                 : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%]"
             } `}
           >
             {getLabels.map((label, index) => (
-              <div className="w-full bg-gradient-to-br from-gray-100 to-gray-50 hover:shadow-md relative border-2 h-[150px] border-gray-200 justify-center text-sm flex flex-col items-center gap-1 pb-8">
-                <p>Label:</p>
+              <div className="w-full bg-white shadow-md hover:shadow-xl relative border-2 h-[100px] border-gray-200 justify-center text-sm flex flex-col items-center gap-1 pb-2">
                 <p className="text-md text-center font-mono w-[90%]">
-                  {label.label}
+                  {label.label.length > 10
+                    ? `${label.label.slice(0, 10)}...`
+                    : label.label}
                 </p>
                 <MoreVertIcon
                   className="absolute bottom-1 right-0 cursor-pointer"
@@ -476,12 +483,12 @@ const DatasetDetails = () => {
                   onClick={() => handleLabelSettings(index)}
                 />
                 {labelSettings && selectedLabelId === index && (
-                  <div className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[60%] z-10 items-start flex flex-col">
+                  <div className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[120%] z-10 items-start flex flex-col">
                     <button
                       onClick={() => deleteLabel(label.id)}
                       className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
                     >
-                      Label löschen
+                      Kategorie löschen
                     </button>
                     <button
                       onClick={() => {
@@ -490,14 +497,14 @@ const DatasetDetails = () => {
                       }}
                       className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
                     >
-                      Label umbennenen
+                      Kategorie umbennenen
                     </button>
                   </div>
                 )}
               </div>
             ))}
             <button
-              className="h-[150px] border-2 w-full text-white border-gray-200 shadow-md hover:shadow-lg"
+              className="h-[100px] border-2 w-full text-white border-gray-200 shadow-md hover:shadow-lg"
               onClick={handleLabelClick}
             >
               <AddIcon color="primary" />

@@ -112,64 +112,80 @@ const UploadPage = () => {
     <div className="w-full h-full flex flex-col items-center">
       {currentTaskIndex < tasks.length && (
         <form
-          className="flex flex-col w-[30%] rounded-md max-md:w-4/5 items-center bg-white shadow-md mt-[5%] px-10 py-10 gap-3"
+          className="flex flex-col w-[30%] rounded-md max-lg:w-3/5 max-md:w-4/5 items-center bg-white shadow-md mt-[5%] px-10 py-10 gap-3"
           onSubmit={handleSubmit}
         >
           <h2 className="text-xl">Aufgabe {currentTaskIndex + 1}</h2>
           <h1>{tasks[currentTaskIndex].task}</h1>
-          {filePreview && (
-            <div className="image-preview">
+          {!filePreview && (
+            <label
+              className="mt-[6%] mb-[2%] block text-gray-800 font-normal tracking-tighter text-md"
+              htmlFor="fileInput"
+            >
+              Lade ein Bild hoch
+            </label>
+          )}
+          {filePreview ? (
+            <div className="flex flex-col items-center relative my-4">
               <img
-                src={filePreview}
                 className="max-h-[200px] bg-contain w-max-[80%]"
-                alt="File Preview"
+                src={filePreview}
+                alt=""
               />
+              <p
+                onClick={() => setFilePreview(undefined)}
+                className="absolute right-[-10%] top-[-3%] text-xl font-semibold cursor-pointer"
+              >
+                &times;
+              </p>
+            </div>
+          ) : (
+            <div className="relative w-[100%] h-[150px] border-2 border-gray-2 rounded-md 00 mb-[6%] items-center flex justify-center">
+              <input
+                name="fileInput"
+                type="file"
+                className="w-full h-full opacity-0 cursor-pointer z-10"
+                onChange={handleFileChange}
+                accept="image/*"
+              />
+              <p className="absolute italic text-gray-400 z-0">
+                Bild hier hochladen
+              </p>
             </div>
           )}
           {filePreview && (
-            <Select
-              className="w-[30%]"
-              label="Label auswählen"
-              value={selectedLabel}
-              onChange={(e) => {
-                setSelectedLabel(e.target.value);
-                setSelectedLabelId(
-                  labels.find((label) => label.label === e.target.value)?.id
-                );
+            <div className="flex w-full items-center justify-center gap-4">
+              <p>Wähle eine Kategorie</p>
+              <Select
+                className="w-[30%]"
+                label="Label auswählen"
+                value={selectedLabel}
+                onChange={(e) => {
+                  setSelectedLabel(e.target.value);
+                  setSelectedLabelId(
+                    labels.find((label) => label.label === e.target.value)?.id
+                  );
+                }}
+              >
+                {labels.map((label) => (
+                  <MenuItem key={label.id} value={label.label}>
+                    {label.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </div>
+          )}
+          {filePreview && (
+            <button
+              className="py-2 px-2 bg-blue-600 text-white rounded-md w-[50%] mt-4 duration-300 hover:animate-pulse"
+              onClick={() => {
+                uploadFile();
+                setSelectedLabel("");
               }}
             >
-              {labels.map((label) => (
-                <MenuItem key={label.id} value={label.label}>
-                  {label.label}
-                </MenuItem>
-              ))}
-            </Select>
+              Senden
+            </button>
           )}
-          <label
-            className="mt-[6%] mb-[2%] block text-gray-800 font-normal tracking-tighter text-md"
-            htmlFor="fileInput"
-          >
-            Lade ein Bild hoch
-          </label>
-          <input
-            name="fileInput"
-            className="w-[50%] max-md:w-[95%] text-sm text-slate-500
-                      file:mr-4 file:py-2 file:px-4 file:rounded-md
-                      file:border-0 file:text-sm file:font-semibold
-                    file:bg-blue-50 file:text-blue-700
-                    hover:file:bg-blue-100"
-            type="file"
-            onChange={handleFileChange}
-            placeholder="Hier Bild hochladen"
-          />
-          <button
-            onClick={() => {
-              uploadFile();
-              setSelectedLabel("");
-            }}
-          >
-            Senden
-          </button>
         </form>
       )}
       {currentTaskIndex >= tasks.length && tasks.length >= 1 && (

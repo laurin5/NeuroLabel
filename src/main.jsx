@@ -19,6 +19,7 @@ import MainLayout from "./components/MainLayout.jsx";
 import ProfilePage from "./pages/ProfilePage/ProfilePage.jsx";
 import DatasetDetails from "./pages/DatasetDetails/DatasetDetails.jsx";
 import UploadPage from "./pages/UploadPage/UploadPage.jsx";
+import AdminPage from "./pages/AdminPage/AdminPage.jsx";
 
 const isMobile = window.innerWidth <= 768;
 console.log(isMobile);
@@ -27,7 +28,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         {isMobile ? (
@@ -48,6 +48,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           </Route>
         ) : (
           <Route element={<MainLayout />}>
+            <Route path="/" element={<App />} />
             <Route path="/projects" element={<Dashboard />} />
             <Route path="/create" element={<CreatePage />} />
             <Route path="/invite/send" element={<InvitePeople />} />
@@ -57,6 +58,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/projects/datasets/:id" element={<DatasetDetails />} />
             <Route path="/upload" element={<UploadPage />} />
+            <Route path="/admin" element={<AdminPage />} />
             <Route
               path="/projects/datasets/:id/entries"
               element={<EntryPage />}

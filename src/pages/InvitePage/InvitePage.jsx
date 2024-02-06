@@ -33,6 +33,7 @@ function InvitePage() {
 
     let responseJSON = await response.json();
     setPendingInvites(responseJSON.invites);
+    console.log(responseJSON);
   }
 
   async function loadInvites() {
@@ -106,16 +107,20 @@ function InvitePage() {
           key={pending.id}
           className="flex flex-col items-center bg-white p-2 w-[60%] max-md:w-[90%] rounded-md"
         >
-          <p className="text-lg">Einladung zu</p>
-          <div className="flex gap-12 items-center">
-            <p className="text-md">{pending.project.name}</p>
-            <Button
-              onClick={() => cancelInvites(pending.id)}
-              variant="contained"
-            >
-              Cancel
-            </Button>
+          <div className="flex items-center gap-1">
+            <p className="text-lg text-gray-700">Einladung zu</p>
+            <p className="text-lg">
+              {`"`}
+              {pending.project.name}
+              {`"`}
+            </p>
+            <p className="text-lg text-gray-700">
+              an {pending.receiver.first_name} {pending.receiver.last_name}
+            </p>
           </div>
+          <Button onClick={() => cancelInvites(pending.id)} variant="contained">
+            Cancel
+          </Button>
         </div>
       ))}
       <p

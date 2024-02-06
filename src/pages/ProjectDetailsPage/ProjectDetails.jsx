@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { API_HOST } from "../../utils/api";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -13,18 +13,39 @@ function ProjectDetails() {
   const [toggleDatasetVisibility, setToggleDatasetVisibility] = useState(false);
   const [dataset, setDataset] = useState([]);
   const [selectedDatasetId, setSelectedDatasetId] = useState(null);
-  const [tasks, setTasks] = useState([]);
-  const [labels, setLabels] = useState([]);
   const [settingsVisibility, setSettingsVisibility] = useState(false);
   const [selectedDatasetIndex, setSelectedDatasetIndex] = useState(null);
   const [datasetSettings, setDatasetSettings] = useState(false);
   const [memberVisibility, setMemberVisibility] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState(null);
+  const [renameDataset, setRenameDataset] = useState(false);
 
+  let renameDatasetInput = useRef(null);
   let datasetName = useRef(null);
 
   const params = useParams();
   let location = useLocation();
+  let navigator = useNavigate();
+
+  const newDatasetName = async () => {
+    console.log(renameDatasetInput.current.value);
+    const response = await fetch(
+      `${API_HOST}/projects/datasets/${dataset[selectedDatasetIndex].id}`,
+      {
+        method: "PUT",
+        headers: {
+          SessionID: localStorage.getItem("sessionid"),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dataset_name: renameDatasetInput.current.value,
+        }),
+      }
+    );
+    const responseJSON = await response.json();
+    console.log(responseJSON);
+    loadProjectDetails();
+  };
 
   async function kickUser(emailInput) {
     let response = await fetch(`${API_HOST}/projects/${params.id}/kick`, {
@@ -75,12 +96,7 @@ function ProjectDetails() {
 
   useEffect(() => {
     loadProjectDetails();
-
-    if (selectedDatasetId) {
-      fetchTasks();
-      fetchLabels();
-    }
-  }, [selectedDatasetId]);
+  }, []);
 
   const showMemberOnClick = () => {
     setShowMember(true);
@@ -106,19 +122,6 @@ function ProjectDetails() {
     loadProjectDetails();
   };
 
-  const fetchTasks = async () => {
-    const response = await fetch(
-      `${API_HOST}/projects/datasets/${selectedDatasetId}/tasks`,
-      {
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-        },
-      }
-    );
-    const responseJSON = await response.json();
-    setTasks(responseJSON.tasks);
-  };
-
   async function deleteDataset(datasetId) {
     let response = await fetch(`${API_HOST}/projects/datasets/${datasetId}`, {
       method: "DELETE",
@@ -131,23 +134,10 @@ function ProjectDetails() {
     setDatasetSettings(!datasetSettings);
   }
 
-  const fetchLabels = async () => {
-    const response = await fetch(
-      `${API_HOST}/projects/datasets/${selectedDatasetId}/labels`,
-      {
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-        },
-      }
-    );
-    const responseJSON = await response.json();
-    setLabels(responseJSON.labels);
-  };
-
   return (
     <div className="w-full h-full flex items-center pt-[2%] flex-col gap-4">
       {details.project && (
-        <div className="flex flex-row w-full items-center justify-between pl-[3%] relative">
+        <div className="flex flex-row w-full items-center justify-between px-[4%] relative">
           <div className="flex flex-col w-full">
             <p className="text-xl w-full text-left text-white font-medium">
               {details.project.name}
@@ -158,7 +148,7 @@ function ProjectDetails() {
           </div>
           {location.state.isAdmin && (
             <SettingsIcon
-              className="cursor-pointer text-white absolute xl:right-9 max-lg:right-4 right-4"
+              className="cursor-pointer text-white xl:right-9 max-lg:right-4 right-4"
               onClick={() => {
                 setSettingsVisibility(!settingsVisibility);
               }}
@@ -200,7 +190,15 @@ function ProjectDetails() {
         <p className="text-xl text-white">Datensätze</p>
       )}
       {location.state.isAdmin && (
-        <p className="text-3xl font-medium text-white">Datensätze</p>
+        <div className="flex flex-col items-center">
+          <p className="text-3xl font-medium text-white">Datensätze</p>
+          <p className="text-white italic text-center w-[80%] my-2">
+            Unten finden Sie eine Übersicht Ihrer erstellten Datensätze. Sie
+            haben die Option, weitere Datensätze hinzuzufügen. Weitere
+            Bearbeitungsoptionen finden Sie in den Menüpunkten mit den drei
+            gestapelten Punkten.
+          </p>
+        </div>
       )}
       <div
         className={`${
@@ -240,6 +238,12 @@ function ProjectDetails() {
                   >
                     Datensatz löschen
                   </button>
+                  <button
+                    onClick={() => setRenameDataset(!renameDataset)}
+                    className="hover:bg-gray-100 w-full text-left pl-2 py-[3%]"
+                  >
+                    Datensatz umbenennen
+                  </button>
                   <Link
                     to={`/projects/datasets/${data.id}`}
                     state={{ dataId: data.id }}
@@ -258,6 +262,38 @@ function ProjectDetails() {
               )}
           </div>
         ))}
+        {renameDataset && (
+          <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
+            <div className="max-md:w-[90%] w-1/3 h-2/4 bg-white rounded-md flex items-center flex-col pt-8 justify-center gap-8">
+              <p
+                onClick={() => {
+                  setRenameDataset(false);
+                  setDatasetSettings(false);
+                }}
+                className="cursor-pointer absolute top-[26%] right-[35%] text-xl"
+              >
+                &times;
+              </p>
+              <label htmlFor="renameDataset">Wie soll der neue Name sein</label>
+              <input
+                ref={renameDatasetInput}
+                type="text"
+                placeholder="Name"
+                className="border-2 p-2 rounded-md outline-none"
+              />
+              <button
+                onClick={() => {
+                  newDatasetName();
+                  setRenameDataset(false);
+                  setDatasetSettings(false);
+                }}
+                className="bg-blue-600 border text-white py-2 max-md:w-[60%] w-[60%] rounded-md"
+              >
+                Bestätigen
+              </button>
+            </div>
+          </div>
+        )}
         {location.state.isAdmin && (
           <div>
             <button
@@ -306,14 +342,11 @@ function ProjectDetails() {
                       />
                       <p>
                         {member.first_name} {member.last_name}{" "}
-                        {!member.is_project_admin && (
-                          <span className="absolute right-[12%]">
-                            TeilnehmerIn
-                          </span>
-                        )}
-                        {member.is_project_admin && (
-                          <span className="absolute right-[16%]">LehrerIn</span>
-                        )}
+                        <span className="text-left absolute right-[15%]">
+                          {member.is_project_admin
+                            ? "LehrerIn"
+                            : "TeilnehmerIn"}
+                        </span>
                       </p>
                       {!member.is_admin && (
                         <MoreHorizIcon
@@ -327,7 +360,7 @@ function ProjectDetails() {
                       {memberVisibility && selectedMemberId == index && (
                         <div className="cursor-pointer bg-white absolute top-[31%] right-[4%] shadow-xl border-[1px] border-gray-100 w-[30%] z-10 items-start flex flex-col">
                           <p
-                            onClick={() => kick(member.email)}
+                            onClick={() => kickUser(member.email)}
                             className="text-red-600 hover:bg-gray-100 w-full text-left pl-2 py-[3%]"
                           >
                             Teilnehmer kicken

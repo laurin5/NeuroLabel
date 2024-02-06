@@ -12,22 +12,6 @@ function MainLayout() {
     loadUserDetails();
   }, []);
 
-  const handleLogOut = () => {
-    deleteSession();
-    localStorage.removeItem("sessionid");
-    navigator("/login");
-  };
-
-  async function deleteSession() {
-    const id = localStorage.getItem("sessionid");
-    const response = await fetch(`${API_HOST}/sessions/${id}`, {
-      headers: {
-        SessionID: id,
-      },
-      method: "DELETE",
-    });
-  }
-
   const loadUserDetails = async () => {
     const response = await fetch(`${API_HOST}/users/details`, {
       headers: {
@@ -40,46 +24,66 @@ function MainLayout() {
 
   return (
     <div className="w-full">
-      <div className="w-full shadow-md bg-stone-50 flex items-center justify-between sticky top-0 z-10 py-4 px-8">
-        <img
-          onClick={() => navigator("/projects")}
-          src="/Neuro_Label.png"
-          className="object-cover w-[50px] h-[50px] cursor-pointer"
-          alt="Projects"
-        />
-        <ul className="flex items-center gap-8">
-          <li>
-            <Link
-              to="/invites"
-              className="text-gray-700 text-md hover:border-b-2 hover:border-blue-600 duration-150"
-            >
-              Einladungen
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/sessions"
-              className="text-gray-700 text-md hover:border-b-2 hover:border-blue-600 duration-150"
-            >
-              Sitzungen
-            </Link>
-          </li>
-          <li
-            className="cursor-pointer text-gray-700 hover:border-b-2 hover:border-blue-600 duration-150"
-            onClick={handleLogOut}
-          >
-            Ausloggen
-          </li>
-        </ul>
-        <li className="flex justify-end">
+      {localStorage.getItem("sessionid") != null && (
+        <div className="w-full shadow-md bg-stone-50 flex items-center justify-between sticky top-0 z-10 py-4 px-8">
           <img
-            onClick={() => navigator("/profile")}
-            className="w-[50px] h-[50px] object-cover rounded-full shadow-sm cursor-pointer"
-            src={`${API_HOST}/${userDetails.profile_picture_url}`}
-            alt="Profile"
+            onClick={() =>
+              localStorage.getItem("sessionid") != null
+                ? navigator("/projects")
+                : ""
+            }
+            src="/Neuro_Label.png"
+            className="object-cover w-[50px] h-[50px] cursor-pointer"
+            alt="Projects"
           />
-        </li>
-      </div>
+          <ul className="flex items-center gap-8">
+            <li>
+              <Link
+                to="/invites"
+                className="cursor-pointer text-gray-700 text-md hover:border-b-2 hover:border-gray-700 duration-150"
+              >
+                Einladungen
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/sessions"
+                className="cursor-pointer text-gray-700 text-md hover:border-b-2 hover:border-gray-700 duration-150"
+              >
+                Sitzungen
+              </Link>
+            </li>
+            {userDetails.is_admin && (
+              <li>
+                <Link
+                  to="/admin"
+                  className="cursor-pointer text-gray-700 text-md hover:border-b-2 hover:border-gray-700 duration-150"
+                >
+                  Globale Einstellungen
+                </Link>
+              </li>
+            )}
+          </ul>
+          <li className="flex justify-end">
+            <img
+              onClick={() => navigator("/profile")}
+              className="w-[50px] h-[50px] object-cover rounded-full shadow-sm cursor-pointer"
+              src={`${API_HOST}/${userDetails.profile_picture_url}`}
+              alt="Profile"
+            />
+          </li>
+        </div>
+      )}
+      {localStorage.getItem("sessionid") == null && (
+        <div className="w-full shadow-md bg-stone-50 flex items-center justify-center sticky top-0 z-10 py-4 px-8">
+          <img
+            src="/Neuro_Label.png"
+            className="object-cover w-[50px] h-[50px] cursor-pointer"
+            alt="Projects"
+          />
+          <h1 className="font-semibold cursor-pointer">N E U R O L A B E L</h1>
+        </div>
+      )}
       <Outlet />
     </div>
   );
