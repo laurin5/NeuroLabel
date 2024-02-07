@@ -5,8 +5,8 @@ function App() {
   let navigator = useNavigate();
 
   useEffect(() => {
-    localStorage.getItem("sessionid") != null ? navigator("/projects") : "";
-  }, []);
+    localStorage.getItem("sessionid") == null ? "" : navigator("/projects");
+  });
 
   return (
     <div className="flex flex-col items-center justify-center">

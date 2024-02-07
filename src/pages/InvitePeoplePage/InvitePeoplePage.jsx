@@ -1,12 +1,34 @@
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { API_HOST } from "../../utils/api";
 
 function InvitePeople() {
   let navigator = useNavigate();
   const inviteInput = useRef(null);
   let location = useLocation();
-  console.log(localStorage.getItem("projectID"));
+  localStorage.getItem("projectID");
+
+  useEffect(() => {
+    validateSession();
+  }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    responseJSON;
+    if (responseJSON.message == "Success.") {
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
 
   async function sendInvite() {
     const response = await fetch(

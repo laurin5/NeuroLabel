@@ -30,7 +30,7 @@ function RegisterPage() {
       }),
     });
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
 
     navigator("/login");
   }

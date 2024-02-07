@@ -15,8 +15,8 @@ function LoginPage() {
 
   async function login(event) {
     event.preventDefault();
-    console.log(emailInput.current.value);
-    console.log(passwordInput.current.value);
+    emailInput.current.value;
+    passwordInput.current.value;
     const response = await fetch(`${API_HOST}/auth/login`, {
       method: "POST",
       headers: {
@@ -28,7 +28,7 @@ function LoginPage() {
       }),
     });
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
 
     if (response.status === 200) {
       localStorage.setItem("sessionid", responseJSON.sessionid);

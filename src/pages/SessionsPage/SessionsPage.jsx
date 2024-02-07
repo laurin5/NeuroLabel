@@ -77,13 +77,32 @@ function SessionsPage() {
     });
     const responseJSON = await response.json();
 
-    console.log(responseJSON);
+    responseJSON;
     setSessions(responseJSON.sessions);
   }
 
   useEffect(() => {
-    GetSessions();
+    validateSession();
   }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    responseJSON;
+    if (responseJSON.message == "Success.") {
+      GetSessions();
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
 
   return (
     <div className="w-full h-screen">

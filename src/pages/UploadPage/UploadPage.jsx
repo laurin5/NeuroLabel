@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { API_HOST } from "../../utils/api";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -15,14 +15,15 @@ const UploadPage = () => {
   const [file, setFile] = useState(null);
 
   let location = useLocation();
+  let navigator = useNavigate();
 
   const uploadFile = async () => {
-    console.log(file);
+    file;
     const formData = new FormData();
     formData.append("image", file);
 
-    console.log(formData);
-    console.log(selectedLabel);
+    formData;
+    selectedLabel;
 
     const response1 = await fetch("http://lizard-studios.at:10187/files", {
       method: "POST",
@@ -63,7 +64,7 @@ const UploadPage = () => {
       }
     );
     const tasksData = await responseTasks.json();
-    console.log(tasksData);
+    tasksData;
     setTasks(tasksData.tasks);
 
     const responseLabels = await fetch(
@@ -75,7 +76,7 @@ const UploadPage = () => {
       }
     );
     const labelsData = await responseLabels.json();
-    console.log(labelsData);
+    labelsData;
     setLabels(labelsData.labels);
   };
 
@@ -105,8 +106,27 @@ const UploadPage = () => {
   };
 
   useEffect(() => {
-    fetchAll();
+    validateSession();
   }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    responseJSON;
+    if (responseJSON.message == "Success.") {
+      fetchAll();
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
 
   return (
     <div className="w-full h-full flex flex-col items-center">
@@ -191,7 +211,10 @@ const UploadPage = () => {
       {currentTaskIndex >= tasks.length && tasks.length >= 1 && (
         <div className="text-xl w-full flex flex-col items-center justify-center mt-[15%] text-white italic">
           <p>Alle Aufgaben abgeschlossen!</p>
-          <button onClick={() => setCurrentTaskIndex(0)}>
+          <button
+            className="border-white border-[1px] px-4 py-2 mt-10 rounded-md hover:bg-white hover:text-blue-600 duration-300"
+            onClick={() => setCurrentTaskIndex(0)}
+          >
             Nochmal hochladen
           </button>
         </div>

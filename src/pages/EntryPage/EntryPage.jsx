@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { API_HOST } from "../../utils/api";
 
 const EntryPage = () => {
@@ -8,6 +8,7 @@ const EntryPage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   let location = useLocation();
+  let navigator = useNavigate();
 
   const fetchEntries = async () => {
     setLoading(true);
@@ -20,14 +21,33 @@ const EntryPage = () => {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
     setImages(responseJSON.images);
     setLoading(false);
   };
 
   useEffect(() => {
+    validateSession();
     fetchEntries();
   }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    responseJSON;
+    if (responseJSON.message == "Success.") {
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
 
   const enlargeImage = (image) => {
     setSelectedImage(image);

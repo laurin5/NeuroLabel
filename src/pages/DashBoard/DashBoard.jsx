@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { API_HOST } from "../../utils/api";
@@ -18,6 +18,7 @@ function Dashboard() {
 
   let projectNameInput = useRef(null);
   let projectDescriptionInput = useRef(null);
+  let navigator = useNavigate();
 
   async function loadProjects() {
     let response = await fetch(`${API_HOST}/projects`, {
@@ -28,7 +29,7 @@ function Dashboard() {
 
     let responseJSON = await response.json();
     setProjects(responseJSON.projects);
-    console.log(responseJSON);
+    responseJSON;
   }
 
   const loadUserDetails = async () => {
@@ -40,10 +41,11 @@ function Dashboard() {
 
     let responseJSON = await response.json();
     setUserDetails(responseJSON.user);
-    console.log(responseJSON);
+    responseJSON;
   };
 
   useEffect(() => {
+    validateSession();
     loadProjects();
     loadUserDetails();
   }, []);
@@ -61,9 +63,10 @@ function Dashboard() {
       },
     });
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
     loadProjects();
     setProjectSettings(!projectSettings);
+    loadProjects();
   }
 
   async function changeProject() {
@@ -79,7 +82,7 @@ function Dashboard() {
     });
 
     const responseJSON = await response.json();
-    console.log(responseJSON.filename);
+    responseJSON.filename;
 
     const response2 = await fetch(
       `${API_HOST}/projects/${projects[selectedProjectIndex].id}`,
@@ -114,6 +117,24 @@ function Dashboard() {
 
       reader.readAsDataURL(file);
       setFileName(file.name);
+    }
+  };
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    responseJSON;
+    if (responseJSON.message == "Success.") {
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
     }
   };
 
@@ -178,7 +199,7 @@ function Dashboard() {
                 </p>
               </div>
             </Link>
-            {(userDetails.is_instructor || userDetails.is_admin) && (
+            {userDetails.is_admin && (
               <button onClick={() => handleProjectSettingsClick(index)}>
                 <MoreVertIcon
                   className="absolute bottom-2 right-2"
@@ -248,7 +269,7 @@ function Dashboard() {
                 className="w-full flex flex-col items-center"
                 onSubmit={(e) => e.preventDefault()}
               >
-                <div className="w-[75%] bg-white flex flex-col p-6 rounded-md">
+                <div className="w-[90%] bg-white flex flex-col p-6 rounded-md">
                   <div className="flex justify-between mb-[2%]">
                     <label htmlFor="projectName">Projekt Name</label>
                     <input

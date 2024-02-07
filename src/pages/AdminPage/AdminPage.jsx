@@ -1,17 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { API_HOST } from "../../utils/api";
 import SearchIcon from "@mui/icons-material/Search";
+import { useNavigate } from "react-router-dom";
 
 const AdminPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
 
+  let navigator = useNavigate();
+
   useEffect(() => {
+    validateSession();
     getUsers();
   }, []);
 
-  const makeInstructor = async (userId) => {
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    if (responseJSON.message == "Success.") {
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
+
+  const makeInstructor = async (userId, instructor) => {
+    instructor = !instructor;
     const response = await fetch(`${API_HOST}/admin/users/${userId}`, {
       method: "PUT",
       headers: {
@@ -19,11 +41,11 @@ const AdminPage = () => {
         SessionID: localStorage.getItem("sessionid"),
       },
       body: JSON.stringify({
-        is_instructor: true,
+        is_instructor: instructor,
       }),
     });
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    getUsers();
   };
 
   const getUsers = async () => {
@@ -34,7 +56,6 @@ const AdminPage = () => {
     });
     const responseJSON = await response.json();
     setUsers(responseJSON.users);
-    console.log(responseJSON);
   };
 
   useEffect(() => {
@@ -66,7 +87,7 @@ const AdminPage = () => {
             <input
               className=" w-full border-none bg-transparent px-4 py-1 text-gray-400 outline-none focus:outline-none"
               type="text"
-              placeholder="Suche nach Vorname"
+              placeholder="Suche nach Email"
               value={searchTerm}
               onChange={handleSearch}
             />
@@ -98,14 +119,22 @@ const AdminPage = () => {
                     </li>
                     <p className="text-gray-600 text-[10px]">{user.email}</p>
                     <p className="text-[10px]">
-                      {user.is_admin ? "AdministratorIn" : "NutzerIn"}
+                      {user.is_admin
+                        ? "AdministratorIn"
+                        : user.is_instructor
+                        ? "LehrerIn"
+                        : "TeilnehmerIn"}
                     </p>
                     {!user.is_admin && (
                       <p
-                        onClick={() => makeInstructor(user.id)}
+                        onClick={() =>
+                          makeInstructor(user.id, user.is_instructor)
+                        }
                         className="absolute text-[10px] right-4 bottom-6 text-red-500"
                       >
-                        Zu globalem Admin machen
+                        {user.is_instructor
+                          ? "Zu TeilnehmerIn machen"
+                          : "Zu LehrerIn machen"}
                       </p>
                     )}
                   </div>

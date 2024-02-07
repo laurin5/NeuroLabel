@@ -11,12 +11,30 @@ const ProfilePage = () => {
 
   let lastNameInput = useRef(null);
   let firstNameInput = useRef(null);
-
   let navigator = useNavigate();
 
   useEffect(() => {
+    validateSession();
     loadUserDetails();
   }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    responseJSON;
+    if (responseJSON.message == "Success.") {
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
 
   const handleLogOut = () => {
     deleteSession();
@@ -42,7 +60,7 @@ const ProfilePage = () => {
     });
     const responseJSON = await response.json();
     setUserDetails(responseJSON.user);
-    console.log(responseJSON);
+    responseJSON;
   };
 
   const handleFileInput = (event) => {
@@ -74,7 +92,7 @@ const ProfilePage = () => {
     });
 
     const responseJSON = await response.json();
-    console.log(responseJSON.filename);
+    responseJSON.filename;
 
     const response2 = await fetch(`${API_HOST}/users`, {
       method: "PUT",
@@ -96,7 +114,7 @@ const ProfilePage = () => {
     });
 
     const responseJSON2 = await response2.json();
-    console.log(responseJSON2);
+    responseJSON2;
     navigator("/projects");
   }
 

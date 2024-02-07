@@ -9,8 +9,26 @@ function MainLayout() {
   let navigator = useNavigate();
 
   useEffect(() => {
-    loadUserDetails();
+    validateSession();
   }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    if (responseJSON.message == "Success.") {
+      loadUserDetails();
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
 
   const loadUserDetails = async () => {
     const response = await fetch(`${API_HOST}/users/details`, {
@@ -59,7 +77,7 @@ function MainLayout() {
                   to="/admin"
                   className="cursor-pointer text-gray-700 text-md hover:border-b-2 hover:border-gray-700 duration-150"
                 >
-                  Globale Einstellungen
+                  Nutzerverwaltung
                 </Link>
               </li>
             )}

@@ -33,7 +33,7 @@ function InvitePage() {
 
     let responseJSON = await response.json();
     setPendingInvites(responseJSON.invites);
-    console.log(responseJSON);
+    responseJSON;
   }
 
   async function loadInvites() {
@@ -44,7 +44,7 @@ function InvitePage() {
     });
 
     let responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
     setInvites(responseJSON.invites);
   }
 
@@ -86,18 +86,37 @@ function InvitePage() {
     });
     const responseJSON = await response.json();
     setUserDetails(responseJSON.user);
-    console.log(responseJSON);
+    responseJSON;
   };
 
   useEffect(() => {
-    loadInvites();
-    getPendingInvites();
-    loadUserDetails();
+    validateSession();
   }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    responseJSON;
+    if (responseJSON.message == "Success.") {
+      loadInvites();
+      getPendingInvites();
+      loadUserDetails();
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
 
   return (
     <div className="w-full h-full flex max-md:pt-0 pt-10 flex-col gap-2 items-center">
-      {userDetails.is_instructor && (
+      {(userDetails.is_instructor || userDetails.is_admin) && (
         <p className="text-xl w-full text-left pl-[10%] text-white font-semibold">
           Gesendete Einladungen
         </p>
@@ -125,7 +144,9 @@ function InvitePage() {
       ))}
       <p
         className={`text-xl w-full text-left pl-[10%] text-white font-semibold ${
-          userDetails.is_participant && !userDetails.is_instructor
+          userDetails.is_participant &&
+          !userDetails.is_instructor &&
+          !userDetails.is_admin
             ? ""
             : "mt-[5%]"
         }`}

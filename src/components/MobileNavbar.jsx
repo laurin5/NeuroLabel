@@ -3,13 +3,13 @@ import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 
 function MobileNavbar() {
   const [value, setValue] = useState("Projects");
-  const navigator = useNavigate();
+  let navigator = useNavigate();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -18,6 +18,28 @@ function MobileNavbar() {
   const handleNavigate = (path) => {
     navigator(path);
   };
+
+  useEffect(() => {
+    validateSession();
+  }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    if (responseJSON.message == "Success.") {
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
+
   return (
     <div className="">
       <BottomNavigation

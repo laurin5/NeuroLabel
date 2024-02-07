@@ -12,7 +12,6 @@ function ProjectDetails() {
   const [details, setDetails] = useState({});
   const [toggleDatasetVisibility, setToggleDatasetVisibility] = useState(false);
   const [dataset, setDataset] = useState([]);
-  const [selectedDatasetId, setSelectedDatasetId] = useState(null);
   const [settingsVisibility, setSettingsVisibility] = useState(false);
   const [selectedDatasetIndex, setSelectedDatasetIndex] = useState(null);
   const [datasetSettings, setDatasetSettings] = useState(false);
@@ -28,7 +27,7 @@ function ProjectDetails() {
   let navigator = useNavigate();
 
   const newDatasetName = async () => {
-    console.log(renameDatasetInput.current.value);
+    renameDatasetInput.current.value;
     const response = await fetch(
       `${API_HOST}/projects/datasets/${dataset[selectedDatasetIndex].id}`,
       {
@@ -43,7 +42,7 @@ function ProjectDetails() {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
     loadProjectDetails();
   };
 
@@ -77,7 +76,7 @@ function ProjectDetails() {
       }
     );
     let responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
     loadProjectDetails();
   }
 
@@ -91,12 +90,31 @@ function ProjectDetails() {
     let responseJSON = await response.json();
     setDetails(responseJSON);
     setDataset(responseJSON.datasets);
-    console.log(responseJSON);
+    responseJSON;
   }
 
   useEffect(() => {
-    loadProjectDetails();
+    validateSession();
   }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    responseJSON;
+    if (responseJSON.message == "Success.") {
+      loadProjectDetails();
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
 
   const showMemberOnClick = () => {
     setShowMember(true);
@@ -119,7 +137,9 @@ function ProjectDetails() {
         upload_type: "image",
       }),
     });
-    loadProjectDetails();
+
+    const responseJSON = await response.json();
+    navigator(`/projects/datasets/${responseJSON.dataset_id}`);
   };
 
   async function deleteDataset(datasetId) {
@@ -181,7 +201,7 @@ function ProjectDetails() {
       )}
       {dataset && dataset.length < 1 && !location.state.isAdmin && (
         <div className="mt-[20%] flex items-center justify-center max-md:mt-[40%] max-md:text-md">
-          <p className="italic">
+          <p className="italic text-white">
             In diesem Projekt wurde noch kein Datensatz erstellt!
           </p>
         </div>

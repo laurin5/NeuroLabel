@@ -22,7 +22,7 @@ import UploadPage from "./pages/UploadPage/UploadPage.jsx";
 import AdminPage from "./pages/AdminPage/AdminPage.jsx";
 
 const isMobile = window.innerWidth <= 768;
-console.log(isMobile);
+isMobile;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

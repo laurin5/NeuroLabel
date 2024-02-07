@@ -10,6 +10,27 @@ function CreatePage() {
   const [fileName, setFileName] = useState("");
   let navigator = useNavigate();
 
+  useEffect(() => {
+    validateSession();
+  }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    if (responseJSON.message == "Success.") {
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
+
   async function createProject() {
     const formData = new FormData();
     formData.append("image", uploadFile);
@@ -23,7 +44,6 @@ function CreatePage() {
     });
 
     const responseJSON2 = await response2.json();
-    console.log(responseJSON2.filename);
 
     const response = await fetch(`${API_HOST}/projects`, {
       method: "POST",
@@ -39,7 +59,6 @@ function CreatePage() {
     });
 
     const responseJSON = await response.json();
-    console.log(responseJSON);
 
     navigator("/projects");
   }
@@ -57,7 +76,7 @@ function CreatePage() {
 
       reader.readAsDataURL(file);
       setFileName(file.name);
-      console.log(file.name);
+      file.name;
     }
   };
 

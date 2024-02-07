@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -12,6 +12,7 @@ const DatasetDetails = () => {
   let renameDatasetInput = useRef(null);
   let renameTaskInput = useRef(null);
   let renameLabelInput = useRef(null);
+  let navigator = useNavigate();
 
   const [getTasks, setGetTasks] = useState([]);
   const [getLabels, setGetLabels] = useState([]);
@@ -29,7 +30,7 @@ const DatasetDetails = () => {
   const [selectedLabel, setSelectedLabel] = useState(null);
 
   const newDatasetName = async () => {
-    console.log(renameDatasetInput.current.value);
+    renameDatasetInput.current.value;
     const response = await fetch(
       `${API_HOST}/projects/datasets/${location.state.dataId}`,
       {
@@ -44,7 +45,7 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
   };
 
   const newTaskName = async () => {
@@ -62,7 +63,7 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
 
     fetchTasks();
   };
@@ -82,7 +83,7 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
 
     fetchLabels();
   };
@@ -102,7 +103,7 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
     fetchTasks();
   };
 
@@ -116,7 +117,7 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
     setGetTasks(responseJSON.tasks);
   };
 
@@ -131,7 +132,7 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
     setTaskSettings(!taskSettings);
     fetchTasks();
   }
@@ -147,7 +148,7 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
     setLabelSettings(!labelSettings);
     fetchLabels();
   }
@@ -167,7 +168,7 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
     setSelectedLabelId(responseJSON.id);
     fetchLabels();
   };
@@ -182,14 +183,33 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    console.log(responseJSON);
+    responseJSON;
     setGetLabels(responseJSON.labels);
   };
 
   useEffect(() => {
-    fetchTasks();
-    fetchLabels();
+    validateSession();
   }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    responseJSON;
+    if (responseJSON.message == "Success.") {
+      fetchTasks();
+      fetchLabels();
+    } else {
+      localStorage.removeItem("sessionid");
+      navigator("/login");
+    }
+  };
 
   const handleTaskClick = () => {
     setTaskVisibility(true);
