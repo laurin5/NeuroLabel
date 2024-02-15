@@ -21,7 +21,6 @@ const EntryPage = () => {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
     setImages(responseJSON.images);
     setLoading(false);
   };
@@ -41,7 +40,6 @@ const EntryPage = () => {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
     if (responseJSON.message == "Success.") {
     } else {
       localStorage.removeItem("sessionid");

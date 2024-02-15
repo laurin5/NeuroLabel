@@ -45,7 +45,6 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
   };
 
   const newTaskName = async () => {
@@ -63,7 +62,6 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
 
     fetchTasks();
   };
@@ -83,7 +81,6 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
 
     fetchLabels();
   };
@@ -103,7 +100,6 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
     fetchTasks();
   };
 
@@ -117,7 +113,6 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
     setGetTasks(responseJSON.tasks);
   };
 
@@ -132,7 +127,6 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
     setTaskSettings(!taskSettings);
     fetchTasks();
   }
@@ -148,7 +142,6 @@ const DatasetDetails = () => {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
     setLabelSettings(!labelSettings);
     fetchLabels();
   }

@@ -12,7 +12,6 @@ const AdminPage = () => {
 
   useEffect(() => {
     validateSession();
-    getUsers();
   }, []);
 
   const validateSession = async () => {
@@ -26,6 +25,7 @@ const AdminPage = () => {
     );
     const responseJSON = await response.json();
     if (responseJSON.message == "Success.") {
+      getUsers();
     } else {
       localStorage.removeItem("sessionid");
       navigator("/login");

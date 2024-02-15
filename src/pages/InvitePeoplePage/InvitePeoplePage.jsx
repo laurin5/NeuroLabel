@@ -22,7 +22,6 @@ function InvitePeople() {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
     if (responseJSON.message == "Success.") {
     } else {
       localStorage.removeItem("sessionid");

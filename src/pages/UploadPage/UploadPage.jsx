@@ -22,9 +22,6 @@ const UploadPage = () => {
     const formData = new FormData();
     formData.append("image", file);
 
-    formData;
-    selectedLabel;
-
     const response1 = await fetch("http://lizard-studios.at:10187/files", {
       method: "POST",
       headers: {
@@ -64,7 +61,6 @@ const UploadPage = () => {
       }
     );
     const tasksData = await responseTasks.json();
-    tasksData;
     setTasks(tasksData.tasks);
 
     const responseLabels = await fetch(
@@ -76,7 +72,6 @@ const UploadPage = () => {
       }
     );
     const labelsData = await responseLabels.json();
-    labelsData;
     setLabels(labelsData.labels);
   };
 

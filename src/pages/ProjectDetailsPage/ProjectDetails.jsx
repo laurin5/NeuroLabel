@@ -42,7 +42,6 @@ function ProjectDetails() {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
     loadProjectDetails();
   };
 
@@ -76,7 +75,6 @@ function ProjectDetails() {
       }
     );
     let responseJSON = await response.json();
-    responseJSON;
     loadProjectDetails();
   }
 
@@ -90,7 +88,6 @@ function ProjectDetails() {
     let responseJSON = await response.json();
     setDetails(responseJSON);
     setDataset(responseJSON.datasets);
-    responseJSON;
   }
 
   useEffect(() => {
@@ -107,7 +104,6 @@ function ProjectDetails() {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
     if (responseJSON.message == "Success.") {
       loadProjectDetails();
     } else {

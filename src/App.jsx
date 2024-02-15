@@ -1,12 +1,32 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_HOST } from "./utils/api";
 
 function App() {
   let navigator = useNavigate();
 
   useEffect(() => {
-    localStorage.getItem("sessionid") == null ? "" : navigator("/projects");
-  });
+    if (localStorage.getItem("sessionid") != null) {
+      validateSession();
+    }
+  }, []);
+
+  const validateSession = async () => {
+    const response = await fetch(
+      `${API_HOST}/sessions/${localStorage.getItem("sessionid")}/validate`,
+      {
+        headers: {
+          SessionId: localStorage.getItem("sessionid"),
+        },
+      }
+    );
+    const responseJSON = await response.json();
+    if (responseJSON.message == "Success.") {
+      navigator("/projects");
+    } else {
+      localStorage.removeItem("sessionid");
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center">

@@ -27,9 +27,9 @@ function Dashboard() {
       },
     });
 
-    let responseJSON = await response.json();
+    const responseJSON = await response.json();
     setProjects(responseJSON.projects);
-    responseJSON;
+    console.log(responseJSON);
   }
 
   const loadUserDetails = async () => {
@@ -41,13 +41,10 @@ function Dashboard() {
 
     let responseJSON = await response.json();
     setUserDetails(responseJSON.user);
-    responseJSON;
   };
 
   useEffect(() => {
     validateSession();
-    loadProjects();
-    loadUserDetails();
   }, []);
 
   const handleProjectSettingsClick = (index) => {
@@ -66,7 +63,6 @@ function Dashboard() {
     responseJSON;
     loadProjects();
     setProjectSettings(!projectSettings);
-    loadProjects();
   }
 
   async function changeProject() {
@@ -82,7 +78,6 @@ function Dashboard() {
     });
 
     const responseJSON = await response.json();
-    responseJSON.filename;
 
     const response2 = await fetch(
       `${API_HOST}/projects/${projects[selectedProjectIndex].id}`,
@@ -132,6 +127,8 @@ function Dashboard() {
     const responseJSON = await response.json();
     responseJSON;
     if (responseJSON.message == "Success.") {
+      loadProjects();
+      loadUserDetails();
     } else {
       localStorage.removeItem("sessionid");
       navigator("/login");
@@ -199,7 +196,7 @@ function Dashboard() {
                 </p>
               </div>
             </Link>
-            {userDetails.is_admin && (
+            {project.is_admin && (
               <button onClick={() => handleProjectSettingsClick(index)}>
                 <MoreVertIcon
                   className="absolute bottom-2 right-2"

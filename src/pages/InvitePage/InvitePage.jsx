@@ -33,7 +33,6 @@ function InvitePage() {
 
     let responseJSON = await response.json();
     setPendingInvites(responseJSON.invites);
-    responseJSON;
   }
 
   async function loadInvites() {
@@ -44,7 +43,6 @@ function InvitePage() {
     });
 
     let responseJSON = await response.json();
-    responseJSON;
     setInvites(responseJSON.invites);
   }
 
@@ -86,7 +84,6 @@ function InvitePage() {
     });
     const responseJSON = await response.json();
     setUserDetails(responseJSON.user);
-    responseJSON;
   };
 
   useEffect(() => {

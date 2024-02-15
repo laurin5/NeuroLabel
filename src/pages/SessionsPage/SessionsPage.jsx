@@ -14,6 +14,16 @@ function SessionsPage() {
     setVisible(false);
   };
 
+  useEffect(() => {
+    setSessions((prevSessions) => {
+      return prevSessions.slice().sort((a, b) => {
+        if (a.id === localStorage.getItem("sessionid")) return -1;
+        if (b.id === localStorage.getItem("sessionid")) return 1;
+        return 0;
+      });
+    });
+  }, [sessions]);
+
   async function deleteSpecificSession(id) {
     await fetch(`${API_HOST}/sessions/${id}`, {
       method: "DELETE",
@@ -42,7 +52,7 @@ function SessionsPage() {
     navigator("/login");
   }
 
-  async function getBrowserName(userAgent, ip_address, created_at) {
+  async function getBrowserName(userAgent, ip_address, created_at, session_id) {
     setVisible(true);
     const browserName = userAgent.includes("Chrome")
       ? "Chrome"
@@ -58,6 +68,7 @@ function SessionsPage() {
       ip: ip_address,
       browser: browserName,
       created: created_at,
+      id: session_id,
     });
   }
 
@@ -77,7 +88,6 @@ function SessionsPage() {
     });
     const responseJSON = await response.json();
 
-    responseJSON;
     setSessions(responseJSON.sessions);
   }
 
@@ -95,7 +105,6 @@ function SessionsPage() {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
     if (responseJSON.message == "Success.") {
       GetSessions();
     } else {
@@ -105,30 +114,40 @@ function SessionsPage() {
   };
 
   return (
-    <div className="w-full h-screen">
-      <div className="w-full h-screen flex flex-col items-center justify-top mt-[2%] gap-3">
-        <p className="text-xl text-white font-semibold">Your Sessions</p>
-        <button
-          className="bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg hover:bg-gray-50 duration-300"
+    <div className="w-full h-full flex flex-col items-center gap-6 mt-6">
+      <p className="text-xl text-white font-medium w-full text-left ml-[5%]">
+        Deine Sitzungen
+      </p>
+      <p className="text-white italic text-center w-[80%]">
+        Unten finden Sie eine Übersicht Ihrer Sitzungen. Die grün hinterlegte
+        Sitzung ist ihre momentane, wenn Sie auf Mehr Informationen drücken,
+        können Sie sich eine detaillierte Ansicht der ausgewählten Sitzung
+        anzeigen.
+      </p>
+      <div className="w-[90%] flex flex-col items-center justify-top shadow-md hover:shadow-lg rounded-md gap-3">
+        {/* <button
+          className="bg-gray-800 text-white hover:bg-gray-700 px-4 py-2 rounded-lg shadow-md hover:shadow-lg duration-300"
           onClick={deleteAllSessions}
         >
-          Delete all
-        </button>
-        {sessions.map((session) => (
+          Alle löschen
+        </button> */}
+        {sessions.map((session, index) => (
           <div
-            className="w-full h-auto flex flex-col border-2 rounded-md items-center justify-center"
+            className={`py-3 w-full h-auto flex flex-col rounded-md items-center justify-center ${
+              localStorage.getItem("sessionid") == session.id
+                ? "bg-green-50 hover:bg-green-100 duration-300"
+                : index % 2 == 0
+                ? "bg-gray-50 hover:bg-gray-100"
+                : "bg-white hover:bg-gray-100"
+            }`}
             key={session.id}
           >
-            {localStorage.getItem("sessionid") === session.id && (
-              <p className="text-white">Current Session</p>
-            )}
-            <div className="flex items-center">
-              <p className="text-sm text-white">ID: {session.id}</p>
+            <div className="flex items-center relative w-full justify-center">
               <button
-                className="text-white ml-10 text-lg"
+                className="text-black ml-10 text-lg absolute right-2 cursor-pointer"
                 onClick={() => deleteSpecificSession(session.id)}
               >
-                Delete
+                &times;
               </button>
             </div>
             <Button
@@ -136,35 +155,38 @@ function SessionsPage() {
                 getBrowserName(
                   session.user_agent,
                   session.ip_address,
-                  session.created_at
+                  session.created_at,
+                  session.id
                 )
               }
             >
-              See more Information
+              Mehr Informationen
             </Button>
           </div>
         ))}
       </div>
       {selectedSession && visible && (
         <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50">
-          <div className="w-1/3 h-2/4 bg-white rounded-md flex items-center flex-col pt-8">
-            <div className="w-full flex justify-end mr-20 ">
-              <p
-                className="text-4xl mb-12 cursor-pointer text-right"
-                onClick={handleClick}
-              >
-                &times;
-              </p>
-            </div>
+          <div className="w-1/3 h-2/4 bg-white rounded-md flex items-center flex-col justify-center gap-2 relative">
+            <p className="text-sm text-black">
+              Sitzungs ID: {selectedSession.id}
+            </p>
+            <p
+              className="absolute top-0 right-3 text-xl cursor-pointer"
+              onClick={handleClick}
+            >
+              &times;
+            </p>
             <img
               className="w-[100px] object-cover"
               src={browserImageMap[selectedSession.browser]}
-              style={{ maxWidth: "100%" }}
             />
             <p>{selectedSession.browser}</p>
-            <p>IP Address: {selectedSession.ip}</p>
-            <p>Date: {selectedSession.created.split("T")[0]}</p>
-            <p>Time: {selectedSession.created.split("T")[1].split(".")[0]}</p>
+            <p>IP Addresse: {selectedSession.ip}</p>
+            <p>Datum: {selectedSession.created.split("T")[0]}</p>
+            <p>
+              Uhrzeit: {selectedSession.created.split("T")[1].split(".")[0]}
+            </p>
           </div>
         </div>
       )}

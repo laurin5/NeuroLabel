@@ -28,7 +28,6 @@ function LoginPage() {
       }),
     });
     const responseJSON = await response.json();
-    responseJSON;
 
     if (response.status === 200) {
       localStorage.setItem("sessionid", responseJSON.sessionid);

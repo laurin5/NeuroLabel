@@ -26,7 +26,6 @@ function MainLayout() {
       loadUserDetails();
     } else {
       localStorage.removeItem("sessionid");
-      navigator("/login");
     }
   };
 

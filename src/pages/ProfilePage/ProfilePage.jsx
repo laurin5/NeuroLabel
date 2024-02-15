@@ -28,7 +28,6 @@ const ProfilePage = () => {
       }
     );
     const responseJSON = await response.json();
-    responseJSON;
     if (responseJSON.message == "Success.") {
     } else {
       localStorage.removeItem("sessionid");
@@ -60,7 +59,6 @@ const ProfilePage = () => {
     });
     const responseJSON = await response.json();
     setUserDetails(responseJSON.user);
-    responseJSON;
   };
 
   const handleFileInput = (event) => {
@@ -92,7 +90,6 @@ const ProfilePage = () => {
     });
 
     const responseJSON = await response.json();
-    responseJSON.filename;
 
     const response2 = await fetch(`${API_HOST}/users`, {
       method: "PUT",
@@ -114,8 +111,7 @@ const ProfilePage = () => {
     });
 
     const responseJSON2 = await response2.json();
-    responseJSON2;
-    navigator("/projects");
+    window.location.reload();
   }
 
   return (
