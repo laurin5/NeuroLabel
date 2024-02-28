@@ -36,7 +36,7 @@ function RegisterPage() {
 
   return (
     <div className="min-w-full h-screen flex flex-col items-center">
-      <div className="rounded-md max-md:w-full xl:border-[1px] lg:w-[50%] xl:shadow-md xl:w-3/6 flex py-2 px-8 h-auto mt-4 bg-white flex-col justify-center">
+      <div className="rounded-md max-md:w-full xl:border-[1px] lg:w-[50%] xl:shadow-md xl:w-2/6 flex py-2 px-8 h-auto mt-4 bg-white flex-col justify-center">
         <h1 className="text-center font-medium text-2xl mt-3">Registrierung</h1>
         <form name="lastName" onSubmit={register}>
           <div className="flex flex-col ">

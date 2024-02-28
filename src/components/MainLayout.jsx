@@ -53,13 +53,21 @@ function MainLayout() {
             className="object-cover w-[50px] h-[50px] cursor-pointer"
             alt="Projects"
           />
-          <ul className="flex items-center gap-8">
+          <ul className="flex items-center gap-10">
             <li>
               <Link
                 to="/invites"
                 className="cursor-pointer text-gray-700 text-md hover:border-b-2 hover:border-gray-700 duration-150"
               >
                 Einladungen
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/feedback"
+                className="cursor-pointer text-gray-700 text-md hover:border-b-2 hover:border-gray-700 duration-150"
+              >
+                Rückmeldung
               </Link>
             </li>
             <li>
@@ -81,7 +89,10 @@ function MainLayout() {
               </li>
             )}
           </ul>
-          <li className="flex justify-end">
+          <li className="flex justify-end items-center">
+            <p className="mr-3">
+              {userDetails.first_name} {userDetails.last_name}
+            </p>
             <img
               onClick={() => navigator("/profile")}
               className="w-[50px] h-[50px] object-cover rounded-full shadow-sm cursor-pointer"

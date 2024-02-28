@@ -115,7 +115,7 @@ function SessionsPage() {
 
   return (
     <div className="w-full h-full flex flex-col items-center gap-6 mt-6">
-      <p className="text-xl text-white font-medium w-full text-left ml-[5%]">
+      <p className="text-xl text-white font-medium w-full text-left pl-[5%]">
         Deine Sitzungen
       </p>
       <p className="text-white italic text-center w-[80%]">

@@ -20,9 +20,9 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage.jsx";
 import DatasetDetails from "./pages/DatasetDetails/DatasetDetails.jsx";
 import UploadPage from "./pages/UploadPage/UploadPage.jsx";
 import AdminPage from "./pages/AdminPage/AdminPage.jsx";
+import FeedbackPage from "./pages/FeedbackPage/FeedbackPage.jsx";
 
 const isMobile = window.innerWidth <= 768;
-isMobile;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -59,6 +59,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/projects/datasets/:id" element={<DatasetDetails />} />
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/feedback" element={<FeedbackPage />} />
             <Route
               path="/projects/datasets/:id/entries"
               element={<EntryPage />}
