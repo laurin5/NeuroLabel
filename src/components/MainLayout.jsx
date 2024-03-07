@@ -93,12 +93,14 @@ function MainLayout() {
             <p className="mr-3">
               {userDetails.first_name} {userDetails.last_name}
             </p>
-            <img
-              onClick={() => navigator("/profile")}
-              className="w-[50px] h-[50px] object-cover rounded-full shadow-sm cursor-pointer"
-              src={`${API_HOST}/${userDetails.profile_picture_url}`}
-              alt="Profile"
-            />
+            {userDetails.profile_picture_url && (
+              <img
+                onClick={() => navigator("/profile")}
+                className="w-[50px] h-[50px] object-cover rounded-full shadow-sm cursor-pointer"
+                src={`${API_HOST}/${userDetails.profile_picture_url}`}
+                alt="Profile"
+              />
+            )}
           </li>
         </div>
       )}

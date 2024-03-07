@@ -41,6 +41,7 @@ function Dashboard() {
 
     let responseJSON = await response.json();
     setUserDetails(responseJSON.user);
+    console.log(responseJSON);
   };
 
   useEffect(() => {
@@ -67,7 +68,7 @@ function Dashboard() {
 
   async function changeProject() {
     const formData = new FormData();
-    formData.append("image", uploadFile);
+    formData.append("file", uploadFile);
 
     const response = await fetch(`${API_HOST}/files`, {
       method: "POST",
@@ -88,8 +89,14 @@ function Dashboard() {
           SessionID: localStorage.getItem("sessionid"),
         },
         body: JSON.stringify({
-          project_name: projectNameInput.current.value,
-          project_description: projectDescriptionInput.current.value,
+          project_name:
+            projectNameInput.current.value.length >= 1
+              ? projectNameInput.current.value
+              : projects[selectedProjectIndex].name,
+          project_description:
+            projectDescriptionInput.current.value.length >= 1
+              ? projectDescriptionInput.current.value
+              : projects[selectedProjectIndex].description,
           image_url: responseJSON.filename,
         }),
       }
@@ -177,7 +184,7 @@ function Dashboard() {
             <Link
               className="w-full"
               to={`/projects/${project.id}`}
-              state={{ isAdmin: project.is_admin }}
+              state={{ isAdmin: project.is_admin, projectId: project.id }}
               key={project.id}
             >
               <div className="w-full flex items-center flex-col">
@@ -217,7 +224,7 @@ function Dashboard() {
                 </button>
                 {deleteProjectConfirmation && (
                   <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
-                    <div className="max-md:w-[90%] w-1/4 h-2/4 bg-white rounded-md flex items-center flex-col pt-8 justify-center gap-8 relative">
+                    <div className="max-md:w-[90%] w-1/3 h-2/4 bg-white rounded-md flex items-center flex-col pt-8 justify-center gap-8 relative">
                       <p>Wollen Sie das Projekt wirklich löschen?</p>
                       <div className="flex gap-4">
                         <button
@@ -257,6 +264,7 @@ function Dashboard() {
                 onClick={() => {
                   setChangeProjectSettings(false);
                   setProjectSettings(false);
+                  setFile(undefined);
                 }}
                 className="absolute top-3 right-5 text-lg cursor-pointer"
               >
@@ -301,13 +309,13 @@ function Dashboard() {
                   {file ? (
                     <div className="flex flex-col items-center relative">
                       <img
-                        className="h-[200px] w-[30%] object-cover mb-[6%]"
+                        className="h-[200px] w-[80%] object-cover mb-[6%]"
                         src={file}
                         alt=""
                       />
                       <p
                         onClick={() => setFile(undefined)}
-                        className="absolute top-0 right-[20%] text-lg cursor-pointer"
+                        className="absolute top-0 right-[0%] text-lg cursor-pointer"
                       >
                         &times;
                       </p>

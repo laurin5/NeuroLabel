@@ -6,6 +6,8 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 
 function ProjectDetails() {
   const [showMember, setShowMember] = useState(false);
@@ -18,11 +20,11 @@ function ProjectDetails() {
   const [memberVisibility, setMemberVisibility] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [renameDataset, setRenameDataset] = useState(false);
+  const [datasetType, setDatasetType] = useState("");
 
   let renameDatasetInput = useRef(null);
   let datasetName = useRef(null);
 
-  const params = useParams();
   let location = useLocation();
   let navigator = useNavigate();
 
@@ -37,7 +39,10 @@ function ProjectDetails() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          dataset_name: renameDatasetInput.current.value,
+          dataset_name:
+            renameDatasetInput.current.value.length >= 1
+              ? renameDatasetInput.current.value
+              : dataset[selectedDatasetIndex].name,
         }),
       }
     );
@@ -46,23 +51,26 @@ function ProjectDetails() {
   };
 
   async function kickUser(emailInput) {
-    let response = await fetch(`${API_HOST}/projects/${params.id}/kick`, {
-      headers: {
-        SessionID: localStorage.getItem("sessionid"),
-        "Content-Type": "application/json",
-      },
-      method: "DELETE",
-      body: JSON.stringify({
-        email: emailInput,
-      }),
-    });
+    let response = await fetch(
+      `${API_HOST}/projects/${location.state.projectId}/kick`,
+      {
+        headers: {
+          SessionID: localStorage.getItem("sessionid"),
+          "Content-Type": "application/json",
+        },
+        method: "DELETE",
+        body: JSON.stringify({
+          email: emailInput,
+        }),
+      }
+    );
     let responseJSON = await response.json();
     loadProjectDetails();
   }
 
   async function promoteUser(emailInput) {
     let response = await fetch(
-      `${API_HOST}/projects/${params.id}/admins/toggle`,
+      `${API_HOST}/projects/${location.state.projectId}/admins/toggle`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -79,15 +87,19 @@ function ProjectDetails() {
   }
 
   async function loadProjectDetails() {
-    let response = await fetch(`${API_HOST}/projects/${params.id}/details`, {
-      headers: {
-        SessionID: localStorage.getItem("sessionid"),
-      },
-    });
+    let response = await fetch(
+      `${API_HOST}/projects/${location.state.projectId}/details`,
+      {
+        headers: {
+          SessionID: localStorage.getItem("sessionid"),
+        },
+      }
+    );
 
     let responseJSON = await response.json();
     setDetails(responseJSON);
     setDataset(responseJSON.datasets);
+    console.log(responseJSON);
   }
 
   useEffect(() => {
@@ -122,20 +134,25 @@ function ProjectDetails() {
   };
 
   const createNewDataset = async () => {
-    const response = await fetch(`${API_HOST}/projects/${params.id}/datasets`, {
-      method: "POST",
-      headers: {
-        SessionID: localStorage.getItem("sessionid"),
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: datasetName.current.value,
-        upload_type: "image",
-      }),
-    });
+    const response = await fetch(
+      `${API_HOST}/projects/${location.state.projectId}/datasets`,
+      {
+        method: "POST",
+        headers: {
+          SessionID: localStorage.getItem("sessionid"),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: datasetName.current.value,
+          upload_type: datasetType,
+        }),
+      }
+    );
 
     const responseJSON = await response.json();
-    navigator(`/projects/datasets/${responseJSON.dataset_id}`);
+    navigator(`/projects/datasets/${responseJSON.dataset_id}`, {
+      state: { dataId: responseJSON.dataset_id },
+    });
   };
 
   async function deleteDataset(datasetId) {
@@ -174,7 +191,7 @@ function ProjectDetails() {
       )}
       {location.state.isAdmin && settingsVisibility && (
         <div className="flex flex-col bg-white absolute top-[20%] right-[2%] w-[180px] h-fit shadow-xl rounded-md z-10">
-          <div className="rounded-sm cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-full z-10 items-start flex flex-col">
+          <div className="rounded-sm cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-12 w-full z-10 items-start flex flex-col">
             <Link
               onClick={() => {
                 localStorage.setItem("projectID", details.project.id);
@@ -229,7 +246,7 @@ function ProjectDetails() {
           <div className="w-full bg-white shadow-md hover:shadow-lg relative border-2 h-[150px] border-gray-200 text-center text-sm flex flex-col items-center gap-1 pb-8">
             <Link
               to="/upload"
-              state={{ datasetId: data.id }}
+              state={{ datasetId: data.id, dataType: data.upload_type }}
               key={data.id}
               className="text-lg relative w-full h-full flex justify-center items-center"
             >
@@ -330,6 +347,7 @@ function ProjectDetails() {
               className="cursor-pointer absolute top-2 right-4 text-2xl"
               onClick={() => {
                 setShowMember(false);
+                setSettingsVisibility(false);
               }}
             >
               &times;
@@ -346,8 +364,8 @@ function ProjectDetails() {
                   <div
                     className={`${
                       index % 2 == 1
-                        ? "bg-gray-100 flex flex-row justify-between w-full items-center border-b-2 pt-2"
-                        : "bg-white flex flex-row justify-between w-full items-center border-b-2 pt-2"
+                        ? "bg-gray-100 flex flex-row justify-between w-full items-center border-b-2 pt-2 relative"
+                        : "bg-white flex flex-row justify-between w-full items-center border-b-2 pt-2 relative"
                     }`}
                     key={member.id}
                   >
@@ -364,19 +382,20 @@ function ProjectDetails() {
                             : "TeilnehmerIn"}
                         </span>
                       </p>
-                      {!member.is_admin && (
-                        <MoreHorizIcon
-                          onClick={() => {
-                            setMemberVisibility(!memberVisibility);
-                            setSelectedMemberId(index);
-                          }}
-                          className="absolute right-2 cursor-pointer"
-                        />
-                      )}
+                      <MoreHorizIcon
+                        onClick={() => {
+                          setMemberVisibility(!memberVisibility);
+                          setSelectedMemberId(index);
+                        }}
+                        className="absolute right-2 cursor-pointer"
+                      />
                       {memberVisibility && selectedMemberId == index && (
-                        <div className="cursor-pointer bg-white absolute top-[31%] right-[4%] shadow-xl border-[1px] border-gray-100 w-[30%] z-10 items-start flex flex-col">
+                        <div className="cursor-pointer bg-white absolute top-[50%] right-[6%] shadow-xl border-[1px] border-gray-100 w-[30%] z-10 items-start flex flex-col">
                           <p
-                            onClick={() => kickUser(member.email)}
+                            onClick={() => {
+                              kickUser(member.email);
+                              setMemberVisibility(!memberVisibility);
+                            }}
                             className="text-red-600 hover:bg-gray-100 w-full text-left pl-2 py-[3%]"
                           >
                             Teilnehmer kicken
@@ -423,13 +442,27 @@ function ProjectDetails() {
               className="border shadow appearance-none rounded w-[60%] text-md text-gray-700 leading-tight focus:outline-none pl-2 py-[2%]"
               placeholder="Name"
             />
+            <Select
+              className="w-[30%]"
+              label="Label auswählen"
+              value={datasetType}
+              onChange={(e) => {
+                setDatasetType(e.target.value);
+              }}
+            >
+              <MenuItem value="image">Bild</MenuItem>
+              <MenuItem value="audio">Audio</MenuItem>
+              <MenuItem value="video">Video</MenuItem>
+              <MenuItem value="text">Text</MenuItem>
+              <MenuItem value="number">Nummer</MenuItem>
+            </Select>
             <button
               onClick={() => {
                 createNewDataset();
                 setSettingsVisibility(false);
                 setToggleDatasetVisibility(false);
               }}
-              className="bg-blue-600 border text-white py-2 max-md:w-[60%] w-[60%] rounded-md mt-[12%]"
+              className="bg-blue-600 border text-white py-2 max-md:w-[60%] w-[60%] rounded-md mt-2"
             >
               Submit
             </button>

@@ -17,10 +17,11 @@ const UploadPage = () => {
   let location = useLocation();
   let navigator = useNavigate();
 
+  let dataType = location.state.dataType;
+
   const uploadFile = async () => {
-    file;
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("file", file);
 
     const response1 = await fetch("http://lizard-studios.at:10187/files", {
       method: "POST",
@@ -40,7 +41,7 @@ const UploadPage = () => {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          image_url: responseJSON1.filename,
+          [`${dataType}_url`]: responseJSON1.filename,
           label_uuid: selectedLabelId,
         }),
       }
@@ -62,6 +63,7 @@ const UploadPage = () => {
     );
     const tasksData = await responseTasks.json();
     setTasks(tasksData.tasks);
+    console.log(tasksData);
 
     const responseLabels = await fetch(
       `${API_HOST}/projects/datasets/${location.state.datasetId}/labels`,
@@ -87,7 +89,15 @@ const UploadPage = () => {
         setFilePreview(reader.result);
       };
 
-      reader.readAsDataURL(file);
+      if (
+        file.type.startsWith("audio/") ||
+        file.type.startsWith("video/") ||
+        file.type.startsWith("image/")
+      ) {
+        reader.readAsDataURL(file);
+      } else {
+        setFilePreview(null); // Clear file preview if it's not an audio, video or image file
+      }
     }
   };
 
@@ -132,40 +142,48 @@ const UploadPage = () => {
         >
           <h2 className="text-xl">Aufgabe {currentTaskIndex + 1}</h2>
           <h1>{tasks[currentTaskIndex].task}</h1>
-          {!filePreview && (
-            <label
-              className="mt-[6%] mb-[2%] block text-gray-800 font-normal tracking-tighter text-md"
-              htmlFor="fileInput"
-            >
-              Lade ein Bild hoch
-            </label>
+          {filePreview && (
+            <>
+              {file.type.startsWith("audio/") && (
+                <audio controls className="w-full" src={filePreview}>
+                  Your browser does not support the audio element.
+                </audio>
+              )}
+              {file.type.startsWith("video/") && (
+                <video controls className="w-full" src={filePreview}>
+                  Your browser does not support the video element.
+                </video>
+              )}
+              {file.type.startsWith("image/") && (
+                <img
+                  className="max-h-[200px] bg-contain w-max-[80%]"
+                  src={filePreview}
+                  alt=""
+                />
+              )}
+              {!file.type.startsWith("audio/") &&
+                !file.type.startsWith("video/") &&
+                !file.type.startsWith("image/") && (
+                  <div className="flex flex-col items-center relative my-4">
+                    <img
+                      className="max-h-[200px] bg-contain w-max-[80%]"
+                      src={filePreview}
+                      alt=""
+                    />
+                  </div>
+                )}
+            </>
           )}
-          {filePreview ? (
-            <div className="flex flex-col items-center relative my-4">
-              <img
-                className="max-h-[200px] bg-contain w-max-[80%]"
-                src={filePreview}
-                alt=""
-              />
-              <p
-                onClick={() => setFilePreview(undefined)}
-                className="absolute right-[-10%] top-[-3%] text-xl font-semibold cursor-pointer"
-              >
-                &times;
-              </p>
-            </div>
-          ) : (
+          {!filePreview && (
             <div className="relative w-[100%] h-[150px] border-2 border-gray-2 rounded-md 00 mb-[6%] items-center flex justify-center">
               <input
                 name="fileInput"
                 type="file"
                 className="w-full h-full opacity-0 cursor-pointer z-10"
                 onChange={handleFileChange}
-                accept="image/*"
+                accept="audio/*,video/*,image/*"
               />
-              <p className="absolute italic text-gray-400 z-0">
-                Bild hier hochladen
-              </p>
+              <p className="absolute italic text-gray-400 z-0">Hochladen</p>
             </div>
           )}
           {filePreview && (

@@ -19,10 +19,9 @@ function SessionsPage() {
       return prevSessions.slice().sort((a, b) => {
         if (a.id === localStorage.getItem("sessionid")) return -1;
         if (b.id === localStorage.getItem("sessionid")) return 1;
-        return 0;
       });
     });
-  }, [sessions]);
+  }, []);
 
   async function deleteSpecificSession(id) {
     await fetch(`${API_HOST}/sessions/${id}`, {

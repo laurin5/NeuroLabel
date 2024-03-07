@@ -2,14 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
-import SettingsIcon from "@mui/icons-material/Settings";
 import { API_HOST } from "../../utils/api";
 
 const DatasetDetails = () => {
   let location = useLocation();
   let taskDescription = useRef(null);
   let labelName = useRef(null);
-  let renameDatasetInput = useRef(null);
   let renameTaskInput = useRef(null);
   let renameLabelInput = useRef(null);
   let navigator = useNavigate();
@@ -22,30 +20,10 @@ const DatasetDetails = () => {
   const [labelVisibility, setLabelVisibility] = useState(false);
   const [selectedLabelId, setSelectedLabelId] = useState(null);
   const [labelSettings, setLabelSettings] = useState(false);
-  const [renameDataset, setRenameDataset] = useState(false);
-  const [datasetSettings, setDatasetSettings] = useState(false);
   const [renameTask, setRenameTask] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [renameLabel, setRenameLabel] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState(null);
-
-  const newDatasetName = async () => {
-    renameDatasetInput.current.value;
-    const response = await fetch(
-      `${API_HOST}/projects/datasets/${location.state.dataId}`,
-      {
-        method: "PUT",
-        headers: {
-          SessionID: localStorage.getItem("sessionid"),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          dataset_name: renameDatasetInput.current.value,
-        }),
-      }
-    );
-    const responseJSON = await response.json();
-  };
 
   const newTaskName = async () => {
     const response = await fetch(
@@ -57,7 +35,10 @@ const DatasetDetails = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          new_task: renameTaskInput.current.value,
+          new_task:
+            renameTaskInput.current.value.length >= 1
+              ? renameTaskInput.current.value
+              : selectedTask.name,
         }),
       }
     );
@@ -76,7 +57,10 @@ const DatasetDetails = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          new_label: renameLabelInput.current.value,
+          new_label:
+            renameLabelInput.current.value.length >= 1
+              ? renameLabelInput.current.value
+              : selectedLabel.name,
         }),
       }
     );
@@ -238,52 +222,6 @@ const DatasetDetails = () => {
           hinzuzufügen. Weitere Bearbeitungsoptionen finden Sie in den
           Menüpunkten mit den drei gestapelten Punkten.
         </p>
-        <SettingsIcon
-          onClick={() => setDatasetSettings(!datasetSettings)}
-          className="absolute top-[18%] right-[5%] text-white"
-        />
-        {datasetSettings && (
-          <div className="cursor-pointer bg-white absolute top-[21%] shadow-xl border-[1px] border-gray-100 right-24 w-[14%] z-10 items-start flex flex-col">
-            <p
-              className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
-              onClick={() => setRenameDataset(!renameDataset)}
-            >
-              Datensatz umbennenen
-            </p>
-          </div>
-        )}
-        {renameDataset && (
-          <div className="w-full h-screen flex items-center justify-center fixed left-0 top-0 bg-black/50 z-10">
-            <div className="max-md:w-[90%] w-1/3 h-2/4 bg-white rounded-md flex items-center flex-col pt-8 justify-center gap-8">
-              <p
-                onClick={() => {
-                  setRenameDataset(false);
-                  setDatasetSettings(false);
-                }}
-                className="cursor-pointer absolute top-[26%] right-[35%] text-xl"
-              >
-                &times;
-              </p>
-              <label htmlFor="renameDataset">Wie soll der neue Name sein</label>
-              <input
-                ref={renameDatasetInput}
-                type="text"
-                placeholder="Name"
-                className="border-2 p-2 rounded-md outline-none"
-              />
-              <button
-                onClick={() => {
-                  newDatasetName();
-                  setRenameDataset(false);
-                  setDatasetSettings(false);
-                }}
-                className="bg-blue-600 border text-white py-2 max-md:w-[60%] w-[60%] rounded-md"
-              >
-                Bestätigen
-              </button>
-            </div>
-          </div>
-        )}
       </div>
       <p className="w-full text-xl my-[1%] ml-[2%] text-white font-medium tracking-wide">
         Aufgaben

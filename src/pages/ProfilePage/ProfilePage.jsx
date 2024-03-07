@@ -79,7 +79,7 @@ const ProfilePage = () => {
 
   async function updateProfile() {
     const formData = new FormData();
-    formData.append("image", uploadFile);
+    formData.append("file", uploadFile);
 
     const response = await fetch(`${API_HOST}/files`, {
       method: "POST",
@@ -171,14 +171,16 @@ const ProfilePage = () => {
             </p>
           </div>
         ) : (
-          <div className="relative w-[100%] h-[200px] border-2 border-gray-2 rounded-md 00 mb-[6%] items-center flex justify-center">
+          <div className="relative w-[100%] h-[200px] border-2 border-gray-2 rounded-md mb-[6%] items-center flex justify-center">
             <input
               name="fileInput"
               type="file"
-              className="w-full h-full opacity-0 cursor-pointer"
+              className="w-full h-full opacity-0 cursor-pointer z-20"
               onChange={handleFileInput}
             />
-            <p className="absolute italic text-gray-400">Bild hier hochladen</p>
+            <p className="absolute italic text-gray-400 z-0">
+              Bild hier hochladen
+            </p>
           </div>
         )}
         <div className="w-full items-center flex flex-col">

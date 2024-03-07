@@ -32,6 +32,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/register" element={<RegisterPage />} />
         {isMobile ? (
           <Route element={<MobileNavbar />}>
+            <Route path="/" element={<App />} />
             <Route path="/projects" element={<Dashboard />} />
             <Route path="/create" element={<CreatePage />} />
             <Route path="/invite/send" element={<InvitePeople />} />

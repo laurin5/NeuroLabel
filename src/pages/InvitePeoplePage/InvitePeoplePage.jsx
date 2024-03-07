@@ -72,7 +72,7 @@ function InvitePeople() {
               sendInvite();
               navigator("/projects");
             }}
-            className="duration-300 hover:bg-blue-800 bg-blue-900 text-xl text-white w-full mt-6 py-2 rounded-sm font-semibold"
+            className="duration-300 hover:bg-blue-600 bg-blue-500 text-xl text-white w-full mt-6 py-2 rounded-sm font-semibold"
             type="submit"
           >
             Senden

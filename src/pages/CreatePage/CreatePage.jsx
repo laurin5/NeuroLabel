@@ -33,7 +33,7 @@ function CreatePage() {
 
   async function createProject() {
     const formData = new FormData();
-    formData.append("image", uploadFile);
+    formData.append("file", uploadFile);
 
     const response2 = await fetch(`${API_HOST}/files`, {
       method: "POST",
@@ -76,7 +76,6 @@ function CreatePage() {
 
       reader.readAsDataURL(file);
       setFileName(file.name);
-      file.name;
     }
   };
 
@@ -140,7 +139,7 @@ function CreatePage() {
             </p>
           </div>
         ) : (
-          <div className="relative w-[100%] h-[150px] border-2 border-gray-2 rounded-md 00 mb-[6%] items-center flex justify-center">
+          <div className="relative w-[100%] h-[150px] border-2 border-gray-2 rounded-md mb-[6%] items-center flex justify-center">
             <input
               name="fileInput"
               type="file"

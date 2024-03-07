@@ -6,6 +6,8 @@ const EntryPage = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [videos, setVideos] = useState([]);
+  const [audios, setAudios] = useState([]);
 
   let location = useLocation();
   let navigator = useNavigate();
@@ -22,7 +24,10 @@ const EntryPage = () => {
     );
     const responseJSON = await response.json();
     setImages(responseJSON.images);
+    setVideos(responseJSON.videos);
+    setAudios(responseJSON.audios);
     setLoading(false);
+    console.log(responseJSON);
   };
 
   useEffect(() => {
@@ -58,15 +63,17 @@ const EntryPage = () => {
   return (
     <div>
       <p className="text-center text-xl text-white mt-2">Entries</p>
-      {images.length < 1 && (
-        <p className="text-center text-xl text-white">
-          Keine Entries vorhanden
-        </p>
-      )}
+      {images.length < 1 ||
+        videos.length < 1 ||
+        (audios.length < 1 && (
+          <p className="text-center text-xl text-white">
+            Keine Entries vorhanden
+          </p>
+        ))}
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="grid grid-cols-10 gap-6 mx-6 lg:grid-cols-8 max-md:grid-cols-5">
+        <div className="grid grid-cols-4 gap-6 mx-6 mt-4">
           {images.map((image) => (
             <div
               className="shadow-md flex flex-col items-center bg-white hover:shadow-xl"
@@ -78,6 +85,38 @@ const EntryPage = () => {
                 className="max-h-[100px] object-cover cursor-pointer w-full"
                 onClick={() => enlargeImage(image)}
               />
+              <p>{image.data_entry.label.label}</p>
+            </div>
+          ))}
+          {videos.map((video) => (
+            <div
+              className="shadow-md flex flex-col items-center bg-white hover:shadow-xl"
+              key={video.id}
+            >
+              <video
+                controls
+                className="max-h-[200px] object-cover cursor-pointer w-full"
+              >
+                <source
+                  src={`${API_HOST}/${video.video_recording_url}`}
+                  type="video/mp4"
+                />
+              </video>
+              <p>{video.data_entry.label.label}</p>
+            </div>
+          ))}
+          {audios.map((audio) => (
+            <div
+              className="shadow-md flex flex-col items-center bg-white hover:shadow-xl"
+              key={audio.id}
+            >
+              <audio controls className="cursor-pointer w-full">
+                <source
+                  src={`${API_HOST}/${audio.audio_recording_url}`}
+                  type="audio/mpeg"
+                />
+              </audio>
+              <p>{audio.data_entry.label.label}</p>
             </div>
           ))}
         </div>
