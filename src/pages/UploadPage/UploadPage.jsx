@@ -233,7 +233,7 @@ const UploadPage = () => {
         </div>
       )}
       {tasks.length < 1 && (
-        <div className="text-2xl w-full flex flex-col items-center justify-center mt-[15%] text-white italic">
+        <div className="text-2xl w-full flex flex-col items-center justify-center mt-[15%] text-white italic max-md:text-xl">
           <p>Es sind keine Aufgaben in diesem Datensatz vorhanden!</p>
         </div>
       )}

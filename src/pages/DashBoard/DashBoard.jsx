@@ -143,7 +143,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center pb-10">
+    <div className="w-full h-full flex flex-col items-center pb-10 max-md:pb-20">
       <h1 className="text-white text-center text-2xl py-1 tracking-wide mt-[1%] font-semibold">
         Projektübersicht
       </h1>

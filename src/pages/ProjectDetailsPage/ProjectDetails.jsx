@@ -170,46 +170,46 @@ function ProjectDetails() {
   return (
     <div className="w-full h-full flex items-center pt-[2%] flex-col gap-4">
       {details.project && (
-        <div className="flex flex-row w-full items-center justify-between px-[4%] relative">
+        <div className="flex flex-row w-full items-center justify-between px-[4%] max-md:w-[95%] max-md:px-0 relative">
           <div className="flex flex-col w-full">
             <p className="text-xl w-full text-left text-white font-medium">
               {details.project.name}
             </p>
-            <p className="text-left text-md italic w-[80%] text-white">
+            <p className="text-left text-md italic w-[80%] text-white break-words">
               {details.project.description}
             </p>
+            {location.state.isAdmin && settingsVisibility && (
+              <div className="flex flex-col bg-white absolute top-[20%] right-[2%] w-[180px] h-fit shadow-xl rounded-md z-10">
+                <div className="rounded-sm cursor-pointer bg-white absolute top-6 shadow-xl border-[1px] border-gray-100 right-12 w-full z-10 items-start flex flex-col max-md:right-4 max-md:top-12">
+                  <Link
+                    onClick={() => {
+                      localStorage.setItem("projectID", details.project.id);
+                    }}
+                    state={{ isAdmin: location.state.isAdmin }}
+                    to={"/invite/send"}
+                    className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
+                  >
+                    Personen einladen
+                  </Link>
+                  <button
+                    onClick={showMemberOnClick}
+                    variant="contained"
+                    className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
+                  >
+                    Mitglieder ansehen
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
           {location.state.isAdmin && (
             <SettingsIcon
-              className="cursor-pointer text-white xl:right-9 max-lg:right-4 right-4"
+              className="cursor-pointer text-white xl:right-9 max-md:right-6 right-4 max-md:relative"
               onClick={() => {
                 setSettingsVisibility(!settingsVisibility);
               }}
             />
           )}
-        </div>
-      )}
-      {location.state.isAdmin && settingsVisibility && (
-        <div className="flex flex-col bg-white absolute top-[20%] right-[2%] w-[180px] h-fit shadow-xl rounded-md z-10">
-          <div className="rounded-sm cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-12 w-full z-10 items-start flex flex-col">
-            <Link
-              onClick={() => {
-                localStorage.setItem("projectID", details.project.id);
-              }}
-              state={{ isAdmin: location.state.isAdmin }}
-              to={"/invite/send"}
-              className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
-            >
-              Personen einladen
-            </Link>
-            <button
-              onClick={showMemberOnClick}
-              variant="contained"
-              className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"
-            >
-              Mitglieder ansehen
-            </button>
-          </div>
         </div>
       )}
       {dataset && dataset.length < 1 && !location.state.isAdmin && (
@@ -236,7 +236,7 @@ function ProjectDetails() {
       <div
         className={`${
           dataset && dataset.length >= 1
-            ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] shadow-md rounded-md"
+            ? "bg-white gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[96%] shadow-md rounded-md mb-20"
             : `gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2 xl:grid-cols-4 w-[92%] ${
                 location.state.isAdmin ? "bg-white" : ""
               }`

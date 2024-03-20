@@ -58,7 +58,7 @@ const FeedbackPage = () => {
 
   return (
     <div className="w-full h-full flex flex-col items-center mt-4">
-      <p className="text-white italic text-center w-[80%]">
+      <p className="text-white italic max-md:text-sm text-center w-[80%]">
         Auf dieser Seite sehen Sie Projekte, in denen Sie Mitglied sind. Per
         Tastendruck können Sie auswählen aus welchem Projekt sie zufällige
         Bilder bewerten wollen. Sie werden ein zufälliges Bild aus diesem
@@ -68,7 +68,7 @@ const FeedbackPage = () => {
       <p className="w-full text-xl my-[1%] pl-[2%] mt-4 text-white font-medium tracking-wide">
         Ihre Projekte
       </p>
-      <div className="grid grid-cols-10 w-full items-top justify-center p-4 gap-4">
+      <div className="grid grid-cols-10 max-md:grid-cols-4 w-full items-top justify-center p-4 gap-4">
         {projects.map((project, index) => (
           <div
             className={`hover:shadow-lg shadow-md relative border-2 w-full border-gray-200 text-center text-sm flex flex-col items-center gap-1 ${
@@ -119,7 +119,7 @@ const FeedbackPage = () => {
       </div>
       {currentProjectIndex != null && (
         <img
-          className="object-cover h-96"
+          className="object-cover h-96 max-md:h-[20%] max-md:w-[90%]"
           src={`${API_HOST}/${randomImage.image_recording_url}`}
           alt=""
         />

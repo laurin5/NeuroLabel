@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { API_HOST } from "../../utils/api";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import ClearAllIcon from "@mui/icons-material/ClearAll";
 
 const ProfilePage = () => {
   const [userDetails, setUserDetails] = useState({});
@@ -117,31 +119,39 @@ const ProfilePage = () => {
   return (
     <div className="w-full h-screen flex flex-col items-center">
       <h1 className="mt-6 text-2xl font-semibold text-white">Profil</h1>
-      <div className="flex items-center gap-2 mb-[1%] w-[80%]">
+      <div className="flex items-center gap-2 mb-[1%] max-md:w-[95%] max-md:pb-4 w-[80%]">
         <img
-          className="h-[80px] w-[80px] object-cover rounded-full shadow-sm"
+          className="max-md:h-[60px] max-md:w-[60px] h-[80px] w-[80px] object-cover rounded-full shadow-sm"
           src={`${API_HOST}/${userDetails.profile_picture_url}`}
           alt=""
         />
         <p className="text-lg font-semibold text-white">
           {userDetails.last_name} {userDetails.first_name}
         </p>
+        <div
+          onClick={() => {
+            navigator("/sessions");
+          }}
+          className="border-2 p-1 rounded-full flex flex-row justify-center"
+        >
+          <ClearAllIcon className="text-white" />
+        </div>
       </div>
-      <div className="w-[55%] bg-white flex flex-col p-6 rounded-md shadow-md hover:shadow-lg">
-        <div className="flex justify-between mb-[2%]">
+      <div className="w-[55%] max-md:w-[95%] bg-white flex flex-col p-6 rounded-md shadow-md hover:shadow-lg">
+        <div className="flex justify-between mb-[2%] items-center">
           <label htmlFor="userLastName">Nachname</label>
           <input
-            className="border shadow appearance-none rounded text-md text-gray-700 leading-tight focus:outline-none pl-2 py-2"
+            className="border shadow appearance-none rounded text-md text-gray-700 leading-tight focus:outline-none py-2 pl-2"
             ref={lastNameInput}
             type="text"
             name="userLastName"
             placeholder={userDetails.last_name}
           />
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <label htmlFor="userFirstName">Vorname</label>
           <input
-            className="border shadow appearance-none rounded text-md text-gray-700 leading-tight focus:outline-none pl-2 py-2"
+            className="border shadow appearance-none rounded text-md text-gray-700 leading-tight focus:outline-none py-2 pl-2"
             ref={firstNameInput}
             type="text"
             name="userFirstName"
@@ -159,13 +169,13 @@ const ProfilePage = () => {
         {file ? (
           <div className="flex flex-col items-center relative">
             <img
-              className="h-[200px] w-[30%] object-cover mb-[6%]"
+              className="h-[200px] max-md:w-[95%] w-[30%] object-cover mb-[6%]"
               src={file}
               alt=""
             />
             <p
               onClick={() => setFile(undefined)}
-              className="absolute top-0 right-[20%] text-lg cursor-pointer"
+              className="absolute max-md:right-4 max-md:text-xl max-md:text-white top-0 right-[20%] text-lg cursor-pointer"
             >
               &times;
             </p>
@@ -192,7 +202,7 @@ const ProfilePage = () => {
           </button>
         </div>
         <button
-          className="w-full text-right text-red-600"
+          className="w-full text-right text-red-600 max-md:pt-2"
           onClick={handleLogOut}
         >
           Ausloggen

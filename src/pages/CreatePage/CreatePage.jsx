@@ -82,7 +82,7 @@ function CreatePage() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <form
-        className="w-[35%] max-lg:w-[80%] max-lg:h-screen max-md:my-auto h-auto bg-white px-[2%] my-6 py-[2%] max-md:py-[5%] shadow-xl"
+        className="w-[35%] max-md:px-5 max-md:w-[95%] max-md:h-full max-md:mt-5 h-auto bg-white px-[2%] my-6 py-[2%] max-md:py-[5%] shadow-xl"
         onSubmit={(e) => e.preventDefault()}
       >
         <div className="flex flex-col">
@@ -127,7 +127,7 @@ function CreatePage() {
         {file ? (
           <div className="flex flex-col items-center relative">
             <img
-              className="max-h-[150px] w-[50%] object-cover mb-[6%]"
+              className="max-md:max-h-[100px] max-h-[150px] w-[50%] object-cover mb-[6%]"
               src={file}
               alt=""
             />
@@ -151,7 +151,7 @@ function CreatePage() {
             </p>
           </div>
         )}
-        {fileName && (
+        {fileName && file && (
           <div className="mb-[6%] border rounded-md p-2 text-lg text-gray-700">
             <span className="text-gray-400">
               {fileName ? `${fileName}` : ""}

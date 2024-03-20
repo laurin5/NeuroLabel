@@ -42,6 +42,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/projects/datasets/:id" element={<DatasetDetails />} />
             <Route path="/upload" element={<UploadPage />} />
+            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/feedback" element={<FeedbackPage />} />
             <Route
               path="/projects/datasets/:id/entries"
               element={<EntryPage />}

@@ -297,7 +297,7 @@ const DatasetDetails = () => {
           className={`${
             getTasks.length >= 1
               ? "bg-white gap-6 p-6 grid grid-cols-2 max-md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full shadow-md rounded-md"
-              : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2 xl:grid-cols-4 w-[92%] rounded-md"
+              : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2 xl:grid-cols-4 w-full rounded-md"
           } `}
         >
           {getTasks.map((task, index) => (
@@ -341,8 +341,8 @@ const DatasetDetails = () => {
         </div>
       </div>
 
-      <div className="flex flex-col w-full items-center max-md:mb-[15%] mb-[5%]">
-        <p className="w-full text-xl my-[1%] ml-[2%] text-white font-medium tracking-wide">
+      <div className="flex flex-col w-full items-center max-md:mb-[15%] mb-[5%] max-md:pb-8">
+        <p className="max-md:pt-4 w-full text-xl my-[1%] ml-[2%] text-white font-medium tracking-wide">
           Kategorien
         </p>
         <div className="flex bg-white w-[90%] shadow-md rounded-md">
@@ -418,7 +418,7 @@ const DatasetDetails = () => {
             className={`${
               getLabels.length >= 1
                 ? "bg-white gap-6 p-6 grid grid-cols-2 max-md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-8 w-full shadow-md rounded-md"
-                : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2  xl:grid-cols-4 w-[92%]"
+                : "gap-6 p-6 grid max-sm:grid-cols-1 grid-cols-2 xl:grid-cols-4 w-full"
             } `}
           >
             {getLabels.map((label, index) => (
@@ -434,7 +434,7 @@ const DatasetDetails = () => {
                   onClick={() => handleLabelSettings(index)}
                 />
                 {labelSettings && selectedLabelId === index && (
-                  <div className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] border-gray-100 right-4 w-[120%] z-10 items-start flex flex-col">
+                  <div className="cursor-pointer bg-white absolute top-full shadow-xl border-[1px] max-md:right-2 border-gray-100 right-4 w-[120%] z-10 items-start flex flex-col">
                     <button
                       onClick={() => deleteLabel(label.id)}
                       className="hover:bg-gray-100 duration-150 w-full text-left pl-2 py-[3%]"

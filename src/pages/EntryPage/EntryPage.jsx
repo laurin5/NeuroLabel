@@ -73,7 +73,7 @@ const EntryPage = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="grid grid-cols-4 gap-6 mx-6 mt-4">
+        <div className="grid grid-cols-4 max-md:grid-cols-2 gap-6 mx-6 mt-4">
           {images.map((image) => (
             <div
               className="shadow-md flex flex-col items-center bg-white hover:shadow-xl"
